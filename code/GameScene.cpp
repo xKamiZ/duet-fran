@@ -17,10 +17,19 @@ using namespace std;
 namespace DuetClone
 {
 
+    GameScene::Texture_Data GameScene::_texturesData[] =
+            {
+                    { ID(blueCircleId),    "high/blue-circle.png"               },
+                    { ID(redCircleId),       "high/red-circle.png"              },
+            };
+
     GameScene::GameScene()
     {
-        canvas_width  = 1280;
-        canvas_height =  720;
+        canvas_width  = 1920;
+        canvas_height =  1080;
+
+        _blueCircleSprite = nullptr;
+        _redCircleSprite = nullptr;
     }
 
     bool GameScene::initialize ()
@@ -51,6 +60,11 @@ namespace DuetClone
             {
                 case ID(touch-started):
                 case ID(touch-moved):
+                {
+                    x = *event[ID(x)].as< var::Float > ();
+                    y = *event[ID(y)].as< var::Float > ();
+                    break;
+                }
                 case ID(touch-ended):
                 {
                     x = *event[ID(x)].as< var::Float > ();
@@ -85,6 +99,18 @@ namespace DuetClone
             {
                 canvas->clear();
 
+                switch (state)
+                {
+                    case LOADING: break;
+                    case RUNNING:
+
+                        canvas->set_color(0, 0.5f, 1);
+                        canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
+
+                        RenderSprites(*canvas);
+
+                        break;
+                }
 
             }
         }
@@ -94,19 +120,60 @@ namespace DuetClone
     {
         if (!suspended)
         {
-            Graphics_Context::Accessor context = director.lock_graphics_context ();
+            GameScene::GraphicsContext context = director.lock_graphics_context ();
 
-            if (context)
+            if (context) LoadTextures(context);
+        }
+    }
+
+    void GameScene::run (float deltaTime)
+    {
+        UpdateSprites(deltaTime);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    void GameScene::LoadTextures(GameScene::GraphicsContext & graphicsContext)
+    {
+        if (_textures.size() < _texturesCount)
+        {
+
+            Texture_Data   & currentTextureData = _texturesData[_textures.size ()];
+            Texture_Pointer & currentTexture = _textures[currentTextureData.id] = Texture_2D::create (currentTextureData.id, graphicsContext, currentTextureData.path);
+
+            if (currentTexture) graphicsContext->add (currentTexture);
+        }
+        else
+        {
+            if (_timer.get_elapsed_seconds() > 1.0f)
             {
+                CreateSprites();
 
-                // state = RUNNING;
-
+                state = RUNNING;
             }
         }
     }
 
-    void GameScene::run (float )
+    void GameScene::CreateSprites()
     {
+        Sprite_Pointer blueCircle(new Sprite(_textures[ID(blueCircleId)].get()));
+        Sprite_Pointer redCircle(new Sprite(_textures[ID(redCircleId)].get()));
+
+        _sprites.push_back(blueCircle);
+        _sprites.push_back(redCircle);
+
+        _blueCircleSprite = blueCircle.get();
+        _redCircleSprite = redCircle.get();
+    }
+
+    void GameScene::RenderSprites(Canvas &canvas)
+    {
+        for (auto & sprite : _sprites) sprite->render(canvas);
+    }
+
+    void GameScene::UpdateSprites(float deltaTime)
+    {
+        for (auto & sprite : _sprites) sprite->update(deltaTime);
     }
 
 }
