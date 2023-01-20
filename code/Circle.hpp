@@ -6,9 +6,11 @@
 #ifndef BASICS_PROJECT_TEMPLATE_CIRCLE_HPP
 #define BASICS_PROJECT_TEMPLATE_CIRCLE_HPP
 
+#include "Shape.hpp"
+
 namespace DuetClone {
 
-    class Circle {
+    class Circle : public Shape{
 
     };
 
