@@ -29,7 +29,6 @@ namespace DuetClone
         unsigned       canvas_width;
         unsigned       canvas_height;
 
-        Texture_Handle texture;
         float          x, y;
 
     public:

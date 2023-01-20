@@ -83,16 +83,9 @@ namespace DuetClone
 
             if (canvas)
             {
-                canvas->clear        ();
-                canvas->set_color    (1, 1, 1);
-                canvas->draw_point   ({ 360, 360 });
-                canvas->draw_segment ({   0,   0 }, { 1280, 720 });
-                canvas->draw_segment ({   0, 720 }, { 1280,   0 });
+                canvas->clear();
 
-                if (texture)
-                {
-                    canvas->fill_rectangle ({ x, y }, { 100, 100 }, texture.get ());
-                }
+
             }
         }
     }
@@ -105,14 +98,9 @@ namespace DuetClone
 
             if (context)
             {
-                texture = Texture_2D::create (ID(test), context, "test.png");
 
-                if (texture)
-                {
-                    context->add (texture);
+                // state = RUNNING;
 
-                    state = RUNNING;
-                }
             }
         }
     }
