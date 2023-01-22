@@ -119,32 +119,10 @@ namespace DuetClone
                     case LOADING:
                     case RUNNING:
 
-                        canvas->set_color(1.0f, 1.0f, 1.0f);
+                        canvas->set_color(0.0f, 0.0f, 0.0f);
                         canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
 
                         RenderSprites(*canvas);
-
-                        constexpr int square_size    = 150;
-                        constexpr int square_spacing = 25;
-
-                        for (int y = square_spacing, row = 0; y < canvas_height; y += square_size + square_spacing, row++)
-                        {
-                            bool fill = (row & 1) == 0;
-
-                            for (int x = square_spacing; x < canvas_width; x += square_size + square_spacing)
-                            {
-                                if (fill)
-                                {
-                                    canvas->fill_rectangle ({ x, y }, { square_size, square_size });
-                                    fill = false;
-                                }
-                                else
-                                {
-                                    canvas->draw_rectangle ({ x, y }, { square_size, square_size });
-                                    fill = true;
-                                }
-                            }
-                        }
 
                         break;
                 }
