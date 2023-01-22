@@ -23,7 +23,7 @@ namespace DuetClone {
 
     private:
 
-        const float _verticalSpeed;                                          // Velocidad de movimiento vertical del Player
+        const float _verticalSpeed = 400.0f;                                 // Velocidad de movimiento vertical del Player
         float _rotationSpeed;                                                // Velocidad de rotación del Player
 
         Player_Sprites _playerSprites {} ;                                   // Vector de punteros a sprites

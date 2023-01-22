@@ -11,7 +11,6 @@ namespace DuetClone {
 
     Player::Player()
     {
-        _verticalSpeed = 400.0f;
         _rotationSpeed = 50.0f;
     }
 

@@ -27,8 +27,10 @@ namespace DuetClone
 
     GameScene::GameScene()
     {
-        canvas_width  = 1280;
-        canvas_height =  720;
+        canvas_width  = 1920;
+        canvas_height = 1080;
+
+        _playerPtr = &player;
     }
 
     bool GameScene::initialize ()
@@ -115,7 +117,7 @@ namespace DuetClone
                     case LOADING:
                     case RUNNING:
 
-                        canvas->set_color(0, 0.5f, 1);
+                        canvas->set_color(0.0f, 0.0f, 0.0f);
                         canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
 
                         RenderSprites(*canvas);
@@ -138,7 +140,7 @@ namespace DuetClone
 
     void GameScene::run (float deltaTime)
     {
-        UpdateSprites(deltaTime);
+        UpdateSceneObjects(deltaTime);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,22 +177,21 @@ namespace DuetClone
         //_sprites.push_back(redCircle);
 
         // Añade al array de sprites de player los sprites con las texturas correspondientes cargadas
-        if (_player)
+        if (_playerPtr)
         {
-            _player->AddPlayerSprite(blueCircle);
-            _player->AddPlayerSprite(redCircle);
+            _playerPtr->AddPlayerSprite(blueCircle);
+            _playerPtr->AddPlayerSprite(redCircle);
         }
     }
 
     void GameScene::RenderSprites(Canvas & canvas)
     {
         // Dibuja el objeto jugador
-        _player->RenderPlayer(canvas);
+        if (_playerPtr) _playerPtr->RenderPlayer(canvas);
     }
 
-    void GameScene::UpdateSprites(float deltaTime)
+    void GameScene::UpdateSceneObjects(float deltaTime)
     {
-        _player->UpdatePlayer(deltaTime);
+        if (_playerPtr) _playerPtr->UpdatePlayer(deltaTime);
     }
-
 }

@@ -43,7 +43,8 @@ namespace DuetClone
         Texture_Map  _textures;           // Diccionario que contiene punteros a las texturas de los objetos
         Sprite_List _sprites;             // Lista de punteros a sprites que contiene los sprites de los elementos de la escena
 
-        Player * _player;                  // Puntero al jugador
+        Player player;                    // Objeto jugador
+        Player * _playerPtr = nullptr;    // Puntero al jugador
 
     public:
 
@@ -86,8 +87,8 @@ namespace DuetClone
         void LoadTextures(GraphicsContext & graphicsContext);    // Carga las texturas
         void CreateSprites();                                    // Crea los Sprites que habrá en la escena una vez las texturas hayan sido cargadas
 
-        void RenderSprites(basics::Canvas & canvas);             // Dibuja los sprites del juego
-        void UpdateSprites(float deltaTime);                     // Llama a update en los sprites del juego
+        void RenderSprites(basics::Canvas & canvas);             // Dibuja los sprites de la escena de juego
+        void UpdateSceneObjects(float deltaTime);                // Actualiza los objetos de la escena de juego
 
     };
 
