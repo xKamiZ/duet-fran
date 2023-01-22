@@ -17,6 +17,7 @@
 #include <basics/Vector>
 
 #include "Sprite.hpp"
+#include "Player.hpp"
 
 namespace DuetClone
 {
@@ -36,15 +37,13 @@ namespace DuetClone
 
         static struct   Texture_Data { basics::Id id; const char * path; } _texturesData[];
         static unsigned _texturesCount;
-        static constexpr float _playerMovementSpeed = 80.0f;
 
         basics::Timer _timer;
 
-        Texture_Map  _textures;         // Diccionario que contiene punteros a las texturas de los objetos
-        Sprite_List _sprites;           // Lista de punteros a sprites que contiene los sprites de los elementos de la escena
+        Texture_Map  _textures;           // Diccionario que contiene punteros a las texturas de los objetos
+        Sprite_List _sprites;             // Lista de punteros a sprites que contiene los sprites de los elementos de la escena
 
-        Sprite * _blueCircleSprite;       // Puntero al Sprite de _sprites del barco del jugador
-        Sprite * _redCircleSprite;
+        Player * _player;                  // Puntero al jugador
 
     public:
 

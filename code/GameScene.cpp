@@ -23,13 +23,12 @@ namespace DuetClone
                     { ID(redCircleId),       "high/red-circle.png"              },
             };
 
+    unsigned GameScene::_texturesCount = sizeof(_texturesData) / sizeof(Texture_Data);
+
     GameScene::GameScene()
     {
         canvas_width  = 1920;
         canvas_height =  1080;
-
-        _blueCircleSprite = nullptr;
-        _redCircleSprite = nullptr;
     }
 
     bool GameScene::initialize ()
@@ -63,6 +62,17 @@ namespace DuetClone
                 {
                     x = *event[ID(x)].as< var::Float > ();
                     y = *event[ID(y)].as< var::Float > ();
+
+                    if (x > canvas_width / 2.0f)
+                    {
+
+                    } // Pulsación en la mitad derecha de la pantalla
+                    else if (x < canvas_width / 2.0f)
+                    {
+
+                    } // Pulsación en la mitad izquierda de la pantalla
+
+
                     break;
                 }
                 case ID(touch-ended):
@@ -159,16 +169,18 @@ namespace DuetClone
         Sprite_Pointer blueCircle(new Sprite(_textures[ID(blueCircleId)].get()));
         Sprite_Pointer redCircle(new Sprite(_textures[ID(redCircleId)].get()));
 
-        _sprites.push_back(blueCircle);
-        _sprites.push_back(redCircle);
+        //_sprites.push_back(blueCircle);
+        //_sprites.push_back(redCircle);
 
-        _blueCircleSprite = blueCircle.get();
-        _redCircleSprite = redCircle.get();
+        _player->AddPlayerSprite(blueCircle);
+        _player->AddPlayerSprite(redCircle);
+
     }
 
-    void GameScene::RenderSprites(Canvas &canvas)
+    void GameScene::RenderSprites(Canvas & canvas)
     {
-        for (auto & sprite : _sprites) sprite->render(canvas);
+        // Dibuja el objeto jugador
+        _player->RenderPlayer(canvas);
     }
 
     void GameScene::UpdateSprites(float deltaTime)
