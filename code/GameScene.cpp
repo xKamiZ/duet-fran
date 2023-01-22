@@ -19,8 +19,11 @@ namespace DuetClone
 
     GameScene::Texture_Data GameScene::_texturesData[] =
             {
-                    { ID(blueCircleId),    "high/blue-circle.png"               },
-                    { ID(redCircleId),       "high/red-circle.png"              },
+                    { ID(blueCircleId),    "high/blue-circle.png"             },
+                    { ID(redCircleId),     "high/red-circle.png"              },
+                    { ID(rect01Id),        "high/rectangle-01.png"            },
+                    { ID(rect02Id),        "high/rectangle-02.png"            },
+                    { ID(rect03Id),        "high/rectangle-03.png"            },
             };
 
     unsigned GameScene::_texturesCount = sizeof(_texturesData) / sizeof(Texture_Data);
@@ -141,9 +144,9 @@ namespace DuetClone
                 // Ajusta el aspect ratio si no lo está
                 if (!_isAspectRatioAdjusted) AdjustAspectRatio(context);
 
-                if (_playerPtr) InitializePlayer();
-
                 LoadTextures(context);
+
+                InitSceneObjects();
             }
         }
     }
@@ -197,6 +200,19 @@ namespace DuetClone
     {
         Sprite_Pointer blueCircle(new Sprite(_textures[ID(blueCircleId)].get()));
         Sprite_Pointer redCircle(new Sprite(_textures[ID(redCircleId)].get()));
+        Sprite_Pointer rectangle01(new Sprite(_textures[ID(rect01Id)].get()));
+        Sprite_Pointer rectangle02(new Sprite(_textures[ID(rect02Id)].get()));
+        Sprite_Pointer rectangle03(new Sprite(_textures[ID(rect03Id)].get()));
+
+        // Inicializa los puntos centrales de los sprites de los obstáculos
+        rectangle01->set_anchor(basics::CENTER);
+        rectangle02->set_anchor(basics::CENTER);
+        rectangle03->set_anchor(basics::CENTER);
+
+        // Añade a la lista los obstáculos los tres sprites de obstáculos
+        _obstacleSprites.push_back(rectangle01);
+        _obstacleSprites.push_back(rectangle02);
+        _obstacleSprites.push_back(rectangle03);
 
         // Posiciona los sprites de ambos círculos en la pantalla
         if (blueCircle) blueCircle->set_position_x(canvas_width / 4.0f);
@@ -213,23 +229,44 @@ namespace DuetClone
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    void GameScene::InitSceneObjects()
+    {
+        // Establece el punto de pivote de rotación
+        if(_playerPtr) _playerPtr->SetPivotPoint(canvas_width / 2.0f, canvas_height / 8.0f);
+
+        // Establece la posición inicial de los obstáculos
+        for (auto & obstacleSprite : _obstacleSprites)
+        {
+            obstacleSprite->set_position_x(canvas_width / 2.0f);
+            obstacleSprite->set_position_y(canvas_height);
+        }
+
+        // Establece la velocidad inicial en vertical de los obstáculos
+        for (auto & obstacleSprite : _obstacleSprites) obstacleSprite->set_speed_y(0.0f);
+    }
+
     void GameScene::RenderSprites(Canvas & canvas)
     {
         // Dibuja el objeto jugador
         if (_playerPtr) _playerPtr->RenderPlayer(canvas);
+
+        // Dibuja todos los obstáculos de la lista
+        for (const auto & obstacleSprite : _obstacleSprites) obstacleSprite->render(canvas);
     }
 
     void GameScene::UpdateSceneObjects(float deltaTime)
     {
-        // Llama al update del player
+        // Llama a update en el player
         if (_playerPtr) _playerPtr->UpdatePlayer(deltaTime);
-    }
 
-    void GameScene::InitializePlayer()
-    {
-        // Establece el punto de pivote de rotación
-        _playerPtr->SetPivotPoint(canvas_width / 2.0f, canvas_height / 8.0f);
+        // Llama a update para cada obstáculo
+        for (auto & obstacleSprite : _obstacleSprites)
+        {
+            obstacleSprite->set_speed_y(_obstaclesDefaultVerticalSpeed);
+            obstacleSprite->update(deltaTime);
+        }
     }
-
 
 }

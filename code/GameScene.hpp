@@ -37,14 +37,16 @@ namespace DuetClone
 
         static struct   Texture_Data { basics::Id id; const char * path; } _texturesData[];
         static unsigned _texturesCount;
+        float _obstaclesDefaultVerticalSpeed = -150.0f; // Velocidad de movimiento vertical de los obstáculos
+                                                       // No es constante porque hay obstáculos que se desplazarán más rápido
 
         basics::Timer _timer;
 
-        Texture_Map  _textures;           // Diccionario que contiene punteros a las texturas de los objetos
-        Sprite_List _sprites;             // Lista de punteros a sprites que contiene los sprites de los elementos de la escena
+        Texture_Map  _textures;                        // Diccionario que contiene punteros a las texturas de los objetos
+        Sprite_List _obstacleSprites;                  // Lista de punteros a sprites que contiene los sprites de los elementos de la escena
 
-        Player player;                    // Objeto jugador
-        Player * _playerPtr = nullptr;    // Puntero al jugador
+        Player player;                                 // Objeto jugador
+        Player * _playerPtr = nullptr;                 // Puntero al jugador
 
     public:
 
@@ -57,7 +59,7 @@ namespace DuetClone
         State state;
         bool suspended;
 
-        bool _isAspectRatioAdjusted;            // Indica si está ajustado o no el Aspect Ratio
+        bool _isAspectRatioAdjusted;     // Indica si está ajustado o no el Aspect Ratio
 
         unsigned canvas_width;
         unsigned canvas_height;
@@ -90,8 +92,7 @@ namespace DuetClone
         void LoadTextures(GraphicsContextAccessor & graphicsContext);    // Carga las texturas
         void CreateSprites();                                            // Crea los Sprites que habrá en la escena una vez las texturas hayan sido cargadas
         void RenderSprites(basics::Canvas & canvas);                     // Dibuja los sprites de la escena de juego
-        void UpdateSceneObjects(float deltaTime);                        // Actualiza los objetos de la escena de juego
-        void InitializePlayer();                                         // Inicializa lo necesario del Player
+        void UpdateSceneObjects(float deltaTime);                        // Actualiza los objetos de la escena de juego (se llama en run)
+        void InitSceneObjects();                                         // Inicializa los objetos de la escena que lo requieran (se llama en load)
     };
-
 }

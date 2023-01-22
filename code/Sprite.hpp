@@ -30,7 +30,7 @@
         protected:
 
             Texture_2D * texture;                   ///< Textura en la que está la imagen del sprite.
-            int          anchor;                    ///< Indica qué punto de la textura se colocará en 'position' (_touchPositionX,_touchPositionY).
+            int          anchor;                    ///< Indica qué punto de la textura se colocará en 'position' (x,y).
 
             Size2f       size;                      ///< Tamaño del sprite (normalmente en coordenadas virtuales).
             Point2f      position;                  ///< Posición del sprite (normalmente en coordenadas virtuales).
