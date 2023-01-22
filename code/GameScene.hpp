@@ -31,7 +31,7 @@ namespace DuetClone
         typedef std::shared_ptr<Texture_2D> Texture_Pointer;
         typedef std::map<basics::Id, Texture_Pointer> Texture_Map;
 
-        typedef basics::Graphics_Context::Accessor GraphicsContext;
+        typedef basics::Graphics_Context::Accessor GraphicsContextAccessor;
 
     private:
 
@@ -54,13 +54,15 @@ namespace DuetClone
             RUNNING,
         };
 
-        State          state;
-        bool           suspended;
+        State state;
+        bool suspended;
 
-        unsigned       canvas_width;
-        unsigned       canvas_height;
+        bool _isAspectRatioAdjusted;            // Indica si está ajustado o no el Aspect Ratio
 
-        float          x, y;
+        unsigned canvas_width;
+        unsigned canvas_height;
+
+        float x, y;
 
     public:
 
@@ -84,11 +86,13 @@ namespace DuetClone
         void load ();
         void run  (float time);
 
-        void LoadTextures(GraphicsContext & graphicsContext);    // Carga las texturas
-        void CreateSprites();                                    // Crea los Sprites que habrá en la escena una vez las texturas hayan sido cargadas
+        void AdjustAspectRatio(GraphicsContextAccessor & context);       // Ajusta el aspect ratio al real de la pantalla
 
-        void RenderSprites(basics::Canvas & canvas);             // Dibuja los sprites de la escena de juego
-        void UpdateSceneObjects(float deltaTime);                // Actualiza los objetos de la escena de juego
+        void LoadTextures(GraphicsContextAccessor & graphicsContext);    // Carga las texturas
+        void CreateSprites();                                            // Crea los Sprites que habrá en la escena una vez las texturas hayan sido cargadas
+
+        void RenderSprites(basics::Canvas & canvas);                     // Dibuja los sprites de la escena de juego
+        void UpdateSceneObjects(float deltaTime);                        // Actualiza los objetos de la escena de juego
 
     };
 

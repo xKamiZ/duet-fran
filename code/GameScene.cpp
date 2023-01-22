@@ -27,6 +27,8 @@ namespace DuetClone
 
     GameScene::GameScene()
     {
+        _isAspectRatioAdjusted = false;
+
         canvas_width  = 1920;
         canvas_height = 1080;
 
@@ -117,10 +119,32 @@ namespace DuetClone
                     case LOADING:
                     case RUNNING:
 
-                        canvas->set_color(0.0f, 0.0f, 0.0f);
+                        canvas->set_color(1.0f, 1.0f, 1.0f);
                         canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
 
                         RenderSprites(*canvas);
+
+                        constexpr int square_size    = 150;
+                        constexpr int square_spacing = 25;
+
+                        for (int y = square_spacing, row = 0; y < canvas_height; y += square_size + square_spacing, row++)
+                        {
+                            bool fill = (row & 1) == 0;
+
+                            for (int x = square_spacing; x < canvas_width; x += square_size + square_spacing)
+                            {
+                                if (fill)
+                                {
+                                    canvas->fill_rectangle ({ x, y }, { square_size, square_size });
+                                    fill = false;
+                                }
+                                else
+                                {
+                                    canvas->draw_rectangle ({ x, y }, { square_size, square_size });
+                                    fill = true;
+                                }
+                            }
+                        }
 
                         break;
                 }
@@ -132,9 +156,15 @@ namespace DuetClone
     {
         if (!suspended)
         {
-            GameScene::GraphicsContext context = director.lock_graphics_context ();
+            GameScene::GraphicsContextAccessor context = director.lock_graphics_context ();
 
-            if (context) LoadTextures(context);
+            if (context)
+            {
+                // Ajusta el aspect ratio si no lo está
+                if (!_isAspectRatioAdjusted) AdjustAspectRatio(context);
+
+                LoadTextures(context);
+            }
         }
     }
 
@@ -145,7 +175,22 @@ namespace DuetClone
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    void GameScene::LoadTextures(GameScene::GraphicsContext & graphicsContext)
+    void GameScene::AdjustAspectRatio(GameScene::GraphicsContextAccessor & context)
+    {
+        /*
+         * Teniendo en cuenta que la orientación de la pantalla del juego será siempre
+         * 'portrait', el ancho será menor que el alto.
+         * El alto será reescalado para que coincida con el aspect ratio real de la ventana.
+         */
+
+        float aspectRatio = float(context->get_surface_width()) / context->get_surface_height();
+
+        canvas_height = unsigned(canvas_width * aspectRatio);
+
+        _isAspectRatioAdjusted = true;
+    }
+
+    void GameScene::LoadTextures(GameScene::GraphicsContextAccessor & graphicsContext)
     {
         // Se ejecuta por cada textura del array de texturas
         if (_textures.size() < _texturesCount)
@@ -195,4 +240,5 @@ namespace DuetClone
         // Llama al update del player
         if (_playerPtr) _playerPtr->UpdatePlayer(deltaTime);
     }
+
 }
