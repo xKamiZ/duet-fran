@@ -29,7 +29,7 @@ namespace DuetClone
 
     bool Sprite::intersects (const Sprite & other)
     {
-        // Se determinan las coordenadas de la esquina inferior izquierda _touchPositionY de la superior derecha
+        // Se determinan las coordenadas de la esquina inferior izquierda y de la superior derecha
         // de este sprite:
 
         float this_left    = this->get_left_x   ();
@@ -37,7 +37,7 @@ namespace DuetClone
         float this_right   = this_left   + this->size.width;
         float this_top     = this_bottom + this->size.height;
 
-        // Se determinan las coordenadas de la esquina inferior izquierda _touchPositionY de la superior derecha
+        // Se determinan las coordenadas de la esquina inferior izquierda y de la superior derecha
         // del otro sprite:
 
         float other_left   = other.get_left_x   ();

@@ -37,16 +37,10 @@ namespace DuetClone {
 
         // Añade un nuevo puntero a sprite al final del array de sprites del jugador
         void AddPlayerSprite(const shared_ptr<Sprite> spriteRef) { _playerSprites.push_back(spriteRef); }
-
-        // Rota el jugador hacia la derecha a través del punto de pivote
-        void MoveRight(float deltaTime);
-
-        // Rota el jugador hacia la izquierda a través del punto de pivote
-        void MoveLeft(float deltaTime);
-
-        // Dibuja los sprites del jugador en pantalla
-        void RenderPlayer(Canvas & canvas);
-
+        void RenderPlayer(Canvas & canvas);                                  // Dibuja los sprites del jugador en pantalla
+        void MoveRight(float deltaTime);                                     // Rota el jugador hacia la derecha a través del punto de pivote
+        void MoveLeft(float deltaTime);                                      // Rota el jugador hacia la izquierda a través del punto de pivote
+        bool PlayerCollided(Sprite & other);                                 // Comprueba si alguno de los sprites del jugador a impactado con otro
     };
 
 } // DuetClone

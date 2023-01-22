@@ -27,8 +27,8 @@ namespace DuetClone
 
     GameScene::GameScene()
     {
-        canvas_width  = 1920;
-        canvas_height =  1080;
+        canvas_width  = 1280;
+        canvas_height =  720;
     }
 
     bool GameScene::initialize ()
@@ -109,9 +109,10 @@ namespace DuetClone
             {
                 canvas->clear();
 
+
                 switch (state)
                 {
-                    case LOADING: break;
+                    case LOADING:
                     case RUNNING:
 
                         canvas->set_color(0, 0.5f, 1);
@@ -121,7 +122,6 @@ namespace DuetClone
 
                         break;
                 }
-
             }
         }
     }
@@ -145,12 +145,14 @@ namespace DuetClone
 
     void GameScene::LoadTextures(GameScene::GraphicsContext & graphicsContext)
     {
+        // Se ejecuta por cada textura del array de texturas
         if (_textures.size() < _texturesCount)
         {
-
-            Texture_Data   & currentTextureData = _texturesData[_textures.size ()];
+            // Obtiene la información de las texturas del array de texturas
+            Texture_Data & currentTextureData = _texturesData[_textures.size ()];
             Texture_Pointer & currentTexture = _textures[currentTextureData.id] = Texture_2D::create (currentTextureData.id, graphicsContext, currentTextureData.path);
 
+            // Añade la textura al contexto gráfico
             if (currentTexture) graphicsContext->add (currentTexture);
         }
         else
@@ -172,9 +174,12 @@ namespace DuetClone
         //_sprites.push_back(blueCircle);
         //_sprites.push_back(redCircle);
 
-        _player->AddPlayerSprite(blueCircle);
-        _player->AddPlayerSprite(redCircle);
-
+        // Añade al array de sprites de player los sprites con las texturas correspondientes cargadas
+        if (_player)
+        {
+            _player->AddPlayerSprite(blueCircle);
+            _player->AddPlayerSprite(redCircle);
+        }
     }
 
     void GameScene::RenderSprites(Canvas & canvas)

@@ -10,10 +10,8 @@ namespace DuetClone {
 
     Player::Player()
     {
-
         _verticalSpeed = 400.0f;
         _rotationSpeed = 50.0f;
-
     }
 
     void Player::RenderPlayer(Canvas & canvas)
@@ -33,5 +31,15 @@ namespace DuetClone {
     void Player::MoveRight(float deltaTime)
     {
 
+    }
+
+    bool Player::PlayerCollided(Sprite & other)
+    {
+        for (const auto& sprite : _playerSprites)
+        {
+            if (sprite->intersects(other)) return true;
+            else return false;
+        }
+        return false;
     }
 } // DuetClone
