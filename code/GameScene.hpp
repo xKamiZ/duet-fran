@@ -87,10 +87,8 @@ namespace DuetClone
         void run  (float time);
 
         void AdjustAspectRatio(GraphicsContextAccessor & context);       // Ajusta el aspect ratio al real de la pantalla
-
         void LoadTextures(GraphicsContextAccessor & graphicsContext);    // Carga las texturas
         void CreateSprites();                                            // Crea los Sprites que habrá en la escena una vez las texturas hayan sido cargadas
-
         void RenderSprites(basics::Canvas & canvas);                     // Dibuja los sprites de la escena de juego
         void UpdateSceneObjects(float deltaTime);                        // Actualiza los objetos de la escena de juego
 

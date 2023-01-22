@@ -163,7 +163,7 @@ namespace DuetClone
 
         float aspectRatio = float(context->get_surface_width()) / context->get_surface_height();
 
-        canvas_height = unsigned(canvas_width * aspectRatio);
+        canvas_width = unsigned(canvas_height * aspectRatio);
 
         _isAspectRatioAdjusted = true;
     }
@@ -196,8 +196,12 @@ namespace DuetClone
         Sprite_Pointer blueCircle(new Sprite(_textures[ID(blueCircleId)].get()));
         Sprite_Pointer redCircle(new Sprite(_textures[ID(redCircleId)].get()));
 
-        //_sprites.push_back(blueCircle);
-        //_sprites.push_back(redCircle);
+        // Posiciona los sprites de ambos círculos en la pantalla
+        if (blueCircle) blueCircle->set_position_x(canvas_width / 4.0f);
+        if (blueCircle) blueCircle->set_position_y(canvas_height / 4.0f);
+
+        if (redCircle) redCircle->set_position_x(canvas_width * 0.75f);
+        if (redCircle) redCircle->set_position_y(canvas_height / 4.0f);
 
         // Añade al array de sprites de player los sprites con las texturas correspondientes cargadas
         if (_playerPtr)
@@ -218,5 +222,6 @@ namespace DuetClone
         // Llama al update del player
         if (_playerPtr) _playerPtr->UpdatePlayer(deltaTime);
     }
+
 
 }

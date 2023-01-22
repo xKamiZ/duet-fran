@@ -20,7 +20,7 @@ namespace DuetClone {
         if (_playerSprites.empty()) return;
 
         // Loopea el array de sprites y llama a la función render de cada referencia al elemento
-        for (const auto& sprite : _playerSprites) sprite->render(canvas);
+        for (auto& sprite : _playerSprites) sprite->render(canvas);
     }
 
     bool Player::PlayerCollided(Sprite & other)
