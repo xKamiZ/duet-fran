@@ -4,6 +4,7 @@
  */
 
 #include "Player.hpp"
+#include <math.h>
 
 namespace DuetClone {
 
@@ -23,16 +24,6 @@ namespace DuetClone {
         for (const auto& sprite : _playerSprites) sprite->render(canvas);
     }
 
-    void Player::MoveLeft(float deltaTime)
-    {
-
-    }
-
-    void Player::MoveRight(float deltaTime)
-    {
-
-    }
-
     bool Player::PlayerCollided(Sprite & other)
     {
         for (const auto& sprite : _playerSprites)
@@ -41,5 +32,31 @@ namespace DuetClone {
             else return false;
         }
         return false;
+    }
+
+    void Player::UpdatePlayer(float deltaTime)
+    {
+        // Update de los sprites
+        for (const auto& sprite : _playerSprites) sprite->update(deltaTime);
+
+        // Mueve los sprites del player a una velocidad vertical constante
+        HandleVerticalPlayerMovement();
+    }
+
+    void Player::RotateRight()
+    {
+        // Si la dirección es negativa, la cambia a positiva
+        if (_rotationSpeed < 0.0f) SetRotationSpeed(abs(_rotationSpeed));
+    }
+
+    void Player::RotateLeft()
+    {
+        // Si la dirección es positiva, la cambia a negativa
+        if (_rotationSpeed > 0.0f) SetRotationSpeed(-_rotationSpeed);
+    }
+
+    void Player::HandleVerticalPlayerMovement()
+    {
+        for (auto & sprite : _playerSprites) sprite->set_speed_y(_verticalSpeed);
     }
 } // DuetClone

@@ -190,7 +190,7 @@ namespace DuetClone
 
     void GameScene::UpdateSprites(float deltaTime)
     {
-        for (auto & sprite : _sprites) sprite->update(deltaTime);
+        _player->UpdatePlayer(deltaTime);
     }
 
 }
