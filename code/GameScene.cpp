@@ -192,6 +192,7 @@ namespace DuetClone
 
     void GameScene::UpdateSceneObjects(float deltaTime)
     {
+        // Llama al update del player
         if (_playerPtr) _playerPtr->UpdatePlayer(deltaTime);
     }
 }
