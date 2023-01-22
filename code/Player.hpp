@@ -36,6 +36,7 @@ namespace DuetClone {
 
         /// SETTERS ///
         void SetRotationSpeed(const float & newSpeed) { _rotationSpeed = newSpeed; }
+        void SetPivotPoint(const float & x, const float & y) { _rotationPivotPoint[0] = x; _rotationPivotPoint[1] = y;}
 
         // Añade un nuevo puntero a sprite al final del array de sprites del jugador
         void AddPlayerSprite(const shared_ptr<Sprite> spriteRef) { _playerSprites.push_back(spriteRef); }
@@ -45,9 +46,6 @@ namespace DuetClone {
         void RotateRight();                                                  // Cambia la dirección de rotación del jugador a un sentido horario
         void RotateLeft();                                                   // Cambia la dirección de rotación del jugador a un sentido antihorario
 
-    private:
-
-        void HandleVerticalPlayerMovement();                                 // Mueve los sprites del Player verticalmente
     };
 
 } // DuetClone

@@ -141,6 +141,8 @@ namespace DuetClone
                 // Ajusta el aspect ratio si no lo está
                 if (!_isAspectRatioAdjusted) AdjustAspectRatio(context);
 
+                if (_playerPtr) InitializePlayer();
+
                 LoadTextures(context);
             }
         }
@@ -221,6 +223,12 @@ namespace DuetClone
     {
         // Llama al update del player
         if (_playerPtr) _playerPtr->UpdatePlayer(deltaTime);
+    }
+
+    void GameScene::InitializePlayer()
+    {
+        // Establece el punto de pivote de rotación
+        _playerPtr->SetPivotPoint(canvas_width / 2.0f, canvas_height / 8.0f);
     }
 
 

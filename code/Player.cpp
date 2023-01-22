@@ -4,7 +4,6 @@
  */
 
 #include "Player.hpp"
-#include <math.h>
 
 namespace DuetClone {
 
@@ -12,6 +11,9 @@ namespace DuetClone {
     Player::Player()
     {
         _rotationSpeed = 50.0f;
+
+        _rotationPivotPoint[0] = 0.0f;
+        _rotationPivotPoint[1] = 0.0f;
     }
 
     void Player::RenderPlayer(Canvas & canvas)
@@ -37,9 +39,6 @@ namespace DuetClone {
     {
         // Update de los sprites
         for (const auto& sprite : _playerSprites) sprite->update(deltaTime);
-
-        // Mueve los sprites del player a una velocidad vertical constante
-        HandleVerticalPlayerMovement();
     }
 
     void Player::RotateRight()
@@ -52,10 +51,5 @@ namespace DuetClone {
     {
         // Si la dirección es positiva, la cambia a negativa
         if (_rotationSpeed > 0.0f) SetRotationSpeed(-_rotationSpeed);
-    }
-
-    void Player::HandleVerticalPlayerMovement()
-    {
-        for (auto & sprite : _playerSprites) sprite->set_speed_y(_verticalSpeed);
     }
 } // DuetClone

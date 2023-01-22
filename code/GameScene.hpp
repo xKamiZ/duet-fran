@@ -91,7 +91,7 @@ namespace DuetClone
         void CreateSprites();                                            // Crea los Sprites que habrá en la escena una vez las texturas hayan sido cargadas
         void RenderSprites(basics::Canvas & canvas);                     // Dibuja los sprites de la escena de juego
         void UpdateSceneObjects(float deltaTime);                        // Actualiza los objetos de la escena de juego
-
+        void InitializePlayer();                                         // Inicializa lo necesario del Player
     };
 
 }
