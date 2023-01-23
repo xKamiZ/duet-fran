@@ -8,6 +8,7 @@
 #define BASICS_PROJECT_TEMPLATE_OBJECTPOOL_HPP
 
 #include <unordered_map>
+#include <memory>
 
 using std::vector;
 using std::pair;
