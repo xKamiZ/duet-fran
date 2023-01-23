@@ -6,4 +6,5 @@
 #include "ObjectPool.hpp"
 
 namespace DuetClone {
+
 } // DuetClone

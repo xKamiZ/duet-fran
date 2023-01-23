@@ -11,12 +11,12 @@
 #ifndef SPRITE_HEADER
 #define SPRITE_HEADER
 
-    #include <memory>
-    #include <basics/Canvas>
-    #include <basics/Texture_2D>
-    #include <basics/Vector>
+#include <memory>
+#include <basics/Canvas>
+#include <basics/Texture_2D>
+#include <basics/Vector>
 
-    namespace DuetClone
+namespace DuetClone
     {
 
         using basics::Canvas;
