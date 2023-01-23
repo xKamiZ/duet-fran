@@ -18,6 +18,7 @@
 
 #include "Sprite.hpp"
 #include "Player.hpp"
+#include "ObjectPool.hpp"
 
 namespace DuetClone
 {
@@ -37,16 +38,18 @@ namespace DuetClone
 
         static struct   Texture_Data { basics::Id id; const char * path; } _texturesData[];
         static unsigned _texturesCount;
-        float _obstaclesDefaultVerticalSpeed = -150.0f; // Velocidad de movimiento vertical de los obstáculos
-                                                       // No es constante porque hay obstáculos que se desplazarán más rápido
+        float _obstaclesDefaultVerticalSpeed = -150.0f;             // Velocidad de movimiento vertical de los obstáculos
+                                                                    // No es constante porque hay obstáculos que se desplazarán más rápido
 
         basics::Timer _timer;
 
-        Texture_Map  _textures;                        // Diccionario que contiene punteros a las texturas de los objetos
-        Sprite_List _obstacleSprites;                  // Lista de punteros a sprites que contiene los sprites de los elementos de la escena
+        Texture_Map  _textures;                                     // Diccionario que contiene punteros a las texturas de los objetos
+        Sprite_List _obstacleSprites;                               // Lista de punteros a sprites que contiene los sprites de los elementos de la escena
 
-        Player player;                                 // Objeto jugador
-        Player * _playerPtr = nullptr;                 // Puntero al jugador
+        Player player;                                              // Objeto jugador
+        Player * _playerPtr = nullptr;                              // Puntero al jugador
+
+        ObjectPool<Sprite_Pointer> _obstacleSpritePool;             // Pool de Sprites de obstáculos
 
     public:
 

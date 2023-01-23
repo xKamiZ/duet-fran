@@ -35,7 +35,6 @@ namespace DuetClone {
     public:
 
         T & RequestObject();                                                    // Retorna una referencia al objeto correspondiente del pool
-
     };
 
 
@@ -58,7 +57,7 @@ namespace DuetClone {
 
         // Si se finaliza el bucle sin encontrar un elemento disponible...
 
-        static std::shared_ptr<T> newObject = new T(); // Crea un nuevo objeto del tipo que maneja el pool
+        static std::unique_ptr<T> newObject = new T(); // Crea un nuevo objeto del tipo que maneja el pool
 
         _pool.insert(pair<T*, bool>(newObject, true)); // Inserta el nuevo elemento en el pool
                                                        // inicializándolo a true, ya que
