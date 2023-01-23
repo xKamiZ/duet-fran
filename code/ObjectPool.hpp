@@ -55,10 +55,14 @@ namespace DuetClone {
             }
         }
 
-        // Si se finaliza el bucle sin encontrar un elemento disponible
-        // crear un nuevo elemento al final del diccionario y retornarlo
+        // Si se finaliza el bucle sin encontrar un elemento disponible...
 
+        static T * newObject = new T(); // Crea un nuevo objeto del tipo que maneja el pool
 
+        _pool.insert(pair<T*, bool>(newObject, true)); // Inserta el nuevo elemento en el pool
+                                                        // inicializándolo a true, ya que
+                                                        // será devuelto inmediatamente
+        return newObject;
     }
 
     template<typename T>
