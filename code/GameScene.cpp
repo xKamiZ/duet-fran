@@ -24,6 +24,7 @@ namespace DuetClone
                     { ID(rect01Id),        "high/rectangle-01.png"            },
                     { ID(rect02Id),        "high/rectangle-02.png"            },
                     { ID(rect03Id),        "high/rectangle-03.png"            },
+                    { ID(pauseButton),     "high/ui/pause-button.png"         },
             };
 
     unsigned GameScene::_texturesCount = sizeof(_texturesData) / sizeof(Texture_Data);
@@ -35,15 +36,15 @@ namespace DuetClone
         canvas_width  = 1920;
         canvas_height = 1080;
 
-        _playerPtr = &player;
+        _pauseButton = nullptr;
     }
 
     bool GameScene::initialize ()
     {
         state     = LOADING;
         suspended = false;
-        x         = 640;
-        y         = 360;
+        x         = 0.0f;
+        y         = 0.0f;
 
         return true;
     }
@@ -60,34 +61,20 @@ namespace DuetClone
 
     void GameScene::handle (Event & event)
     {
-        if (state == RUNNING)
+        if (state == RUNNING || state  == PAUSED)
         {
             switch (event.id)
             {
                 case ID(touch-started):
-                {
-                    _touchingScreen = true;
-                    break;
-                }
                 case ID(touch-moved):
                 {
                     x = *event[ID(x)].as< var::Float > ();
                     y = *event[ID(y)].as< var::Float > ();
 
-                    if (x > canvas_width / 2.0f)
-                    {
+                    _isTouchingScreen = true;
 
-                        _playerPtr->SetDirection(-1.0f);
-
-                    } // Pulsación en la mitad derecha de la pantalla
-                    else if (x < canvas_width / 2.0f)
-                    {
-
-                        _playerPtr->SetDirection(1.0f);
-
-                    } // Pulsación en la mitad izquierda de la pantalla
-
-                    _touchingScreen = true;
+                    if (x > canvas_width / 2.0f)  _player.SetDirection(-1.0f);
+                    else if (x < canvas_width / 2.0f) _player.SetDirection(1.0f);
 
                     break;
                 }
@@ -95,7 +82,12 @@ namespace DuetClone
                 {
                     x = *event[ID(x)].as< var::Float > ();
                     y = *event[ID(y)].as< var::Float > ();
-                    _touchingScreen = false;
+
+                    _isTouchingScreen = false;
+
+                    Point2f touchPoint = {x, y};    // Crea un punto con ambas coordenadas de la zona de la pantalla donde se ha dejado de pulsar
+                    CheckPauseButton(touchPoint);   // Si se ha tocado el botón de pausa, el estado de la escena pasa a ser PAUSED
+
                     break;
                 }
             }
@@ -108,12 +100,13 @@ namespace DuetClone
         {
             case LOADING: load ();     break;
             case RUNNING: run  (time); break;
+            case PAUSED: break;
         }
     }
 
     void GameScene::render (basics::Graphics_Context::Accessor & context)
     {
-        if (!suspended && state == RUNNING)
+        if (!suspended && state == RUNNING || state == PAUSED)
         {
             Canvas * canvas = context->get_renderer< Canvas > (ID(canvas));
 
@@ -126,22 +119,25 @@ namespace DuetClone
             {
                 canvas->clear();
 
-
-                switch (state)
+                if (state == RUNNING)
                 {
-                    case LOADING:
-                    case RUNNING:
+                    canvas->set_color(0.0f, 0.0f, 0.0f);
+                    canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
 
-                        canvas->set_color(0.0f, 0.0f, 0.0f);
-                        canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
+                    RenderSprites(*canvas);
+                }
+                else if (state == PAUSED)
+                {
+                    canvas->set_color(0.0f, 0.0f, 0.0f);
+                    canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
 
-                        RenderSprites(*canvas);
-
-                        break;
+                    RenderPauseMenu(*canvas);
                 }
             }
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
 
     void GameScene::load ()
     {
@@ -156,7 +152,7 @@ namespace DuetClone
 
                 LoadTextures(context);
 
-                InitSceneObjects();
+                InitializeSceneObjects();
             }
         }
     }
@@ -183,17 +179,26 @@ namespace DuetClone
         _isAspectRatioAdjusted = true;
     }
 
-    void GameScene::LoadTextures(GameScene::GraphicsContextAccessor & graphicsContext)
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    void GameScene::LoadTextures(GameScene::GraphicsContextAccessor & context)
     {
+
+        // Carga el atlas de los elementos de UI
+        _uiAtlas.reset (new Atlas("high/ui/ui-spritesheet.sprites", context));
+
+        // Si se ha podido cargar el atlas, se configuran los botones de UI
+        if (_uiAtlas->good()) ConfigurePauseMenuOptions();
+
         // Se ejecuta por cada textura del array de texturas
         if (_textures.size() < _texturesCount)
         {
             // Obtiene la información de las texturas del array de texturas
             Texture_Data & currentTextureData = _texturesData[_textures.size ()];
-            std::shared_ptr<Texture_2D> & currentTexture = _textures[currentTextureData.id] = Texture_2D::create (currentTextureData.id, graphicsContext, currentTextureData.path);
+            std::shared_ptr<Texture_2D> & currentTexture = _textures[currentTextureData.id] = Texture_2D::create (currentTextureData.id, context, currentTextureData.path);
 
             // Añade la textura al contexto gráfico
-            if (currentTexture) graphicsContext->add (currentTexture);
+            if (currentTexture) context->add (currentTexture);
         }
         else
         {
@@ -206,21 +211,31 @@ namespace DuetClone
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
     void GameScene::CreateSprites()
     {
-        // Crea los Sprites que aparecerán en la escena
-        std::shared_ptr<Sprite> blueCircle(new Sprite(_textures[ID(blueCircleId)].get()));
-        std::shared_ptr<Sprite> redCircle(new Sprite(_textures[ID(redCircleId)].get()));
-        std::shared_ptr<Sprite> rectangle01(new Sprite(_textures[ID(rect01Id)].get()));
-        std::shared_ptr<Sprite> rectangle02(new Sprite(_textures[ID(rect02Id)].get()));
-        std::shared_ptr<Sprite> rectangle03(new Sprite(_textures[ID(rect03Id)].get()));
+        // CREACIÓN DE LOS SPRITES DE LA ESCENA
+        shared_ptr<Sprite> blueCircle(new Sprite(_textures[ID(blueCircleId)].get()));
+        shared_ptr<Sprite> redCircle(new Sprite(_textures[ID(redCircleId)].get()));
+        shared_ptr<Sprite> rectangle01(new Sprite(_textures[ID(rect01Id)].get()));
+        shared_ptr<Sprite> rectangle02(new Sprite(_textures[ID(rect02Id)].get()));
+        shared_ptr<Sprite> rectangle03(new Sprite(_textures[ID(rect03Id)].get()));
+        _pauseButton = make_shared<Sprite>(_textures[ID(pauseButton)].get());                 // Botón de pausa externalizado para poder ser controlado
 
-        // Inicializa los puntos centrales de los sprites de los obstáculos
-        rectangle01->set_anchor(basics::CENTER);
-        rectangle02->set_anchor(basics::TOP | basics::RIGHT);
-        rectangle03->set_anchor(basics::TOP | basics::LEFT);
+        // Inicializa los puntos de anclaje de los sprites de los obstáculos
+        rectangle01->set_anchor(CENTER);
+        rectangle02->set_anchor(CENTER);
+        rectangle03->set_anchor(CENTER);
 
-        // Posiciona los sprites de ambos círculos en la pantalla
+        // INICIALIZACIÓN DEL BOTÓN DE PAUSA
+        _pauseButton->set_anchor(CENTER);                                                  // Establecimiento del punto de anclaje
+        const float xOffset = 10.0f;                                                                 // Offset de la posición
+        const float yOffset = 10.0f;
+        Point2f pauseButtonPosition = { canvas_width - xOffset, canvas_height - yOffset };
+        _pauseButton->set_position(pauseButtonPosition);                                  // Establece la posición
+
+        // Establecimiento de la posición incial de los círculos
         if (blueCircle) blueCircle->set_position_x(canvas_width / 4.0f);
         if (blueCircle) blueCircle->set_position_y(canvas_height / 4.0f);
         if (redCircle) redCircle->set_position_x(canvas_width * 0.75f);
@@ -231,28 +246,23 @@ namespace DuetClone
         _obstaclePool.Add(rectangle02.get());
         _obstaclePool.Add(rectangle03.get());
 
-
         _spriteList.push_back(blueCircle);
         _spriteList.push_back(redCircle);
         _spriteList.push_back(rectangle01);
         _spriteList.push_back(rectangle02);
         _spriteList.push_back(rectangle03);
 
-
         // Añade al array de sprites de player los sprites de las bolas
-        if (_playerPtr)
-        {
-            _playerPtr->AddPlayerSprite(blueCircle);
-            _playerPtr->AddPlayerSprite(redCircle);
-        }
+        _player.AddPlayerSprite(blueCircle);
+        _player.AddPlayerSprite(redCircle);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    void GameScene::InitSceneObjects()
+    void GameScene::InitializeSceneObjects()
     {
         // Establece el punto de pivote de rotación
-        if(_playerPtr) _playerPtr->SetPivotPoint(canvas_width / 2.0f, canvas_height / 6.0f);
+        _player.SetPivotPoint(canvas_width / 2.0f, canvas_height / 6.0f);
 
         for (int i = 0; i < 4; ++i)
         {
@@ -269,19 +279,27 @@ namespace DuetClone
         }
     }
 
+    void GameScene::RenderPauseMenu(Canvas & canvas)
+    {
+
+    }
+
     void GameScene::RenderSprites(Canvas & canvas)
     {
         // Dibuja el objeto jugador
-        if (_playerPtr) _playerPtr->RenderPlayer(canvas);
+        _player.RenderPlayer(canvas);
 
         // Dibuja los obstáculos
         for (const auto & obstacle : _obstacleList) obstacle->render(canvas);
+
+        // Dibuja la interfaz de usuario
+        RenderPauseMenu(canvas);
     }
 
     void GameScene::UpdateSceneObjects(float deltaTime)
     {
         // Llama a update en el player
-        if (_playerPtr) _playerPtr->UpdatePlayer(deltaTime, _touchingScreen);
+        _player.UpdatePlayer(deltaTime, _isTouchingScreen);
 
         // Llama a update de los obstáculos
         for (auto & obstacle : _obstacleList)
@@ -291,4 +309,32 @@ namespace DuetClone
         }
     }
 
+    void GameScene::ConfigurePauseMenuOptions()
+    {
+        // Se asigna un slice del atlas a cada opción del menú según su ID:
+
+        options[MENU].slice = _uiAtlas->get_slice (ID(menu));
+        options[RESUME].slice = _uiAtlas->get_slice (ID(resume));
+
+        // Se calcula la altura total del menú:
+
+        float menu_height = 0;
+
+        for (auto & option : options)menu_height += option.slice->height;
+
+        // Se calcula la posición del borde superior del menú en su conjunto de modo que
+        // quede centrado verticalmente:
+
+        float option_top = float(canvas_height) / float(2.f + menu_height / 2.f);
+
+        // Se establece la posición del borde superior de cada opción:
+
+        for (unsigned index = 0; index < number_of_options; ++index)
+        {
+            options[index].position = Point2f{ canvas_width / 2.f, option_top };
+
+            option_top -= options[index].slice->height;
+        }
+
+    }
 }

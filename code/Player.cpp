@@ -8,11 +8,13 @@
 
 namespace DuetClone {
 
-
     Player::Player()
     {
+        _playerSprites = { };
         _rotationPivotPoint[0] = 0.0f;
         _rotationPivotPoint[1] = 0.0f;
+        _currentAngle = 0.0f;
+        _direction = 0.0f;
     }
 
     void Player::RenderPlayer(Canvas & canvas)
@@ -22,16 +24,6 @@ namespace DuetClone {
 
         // Loopea el array de sprites y llama a la función render de cada referencia al elemento
         for (auto& sprite : _playerSprites) sprite->render(canvas);
-    }
-
-    bool Player::PlayerCollided(Sprite & other)
-    {
-        for (const auto& sprite : _playerSprites)
-        {
-            if (sprite->intersects(other)) return true;
-            else return false;
-        }
-        return false;
     }
 
     void Player::UpdatePlayer(float deltaTime, bool touchingScreen)

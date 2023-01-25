@@ -75,11 +75,7 @@ namespace DuetClone
 
                     if (option_at (touch_location) == PLAY)
                     {
-                        director.run_scene (shared_ptr< Scene >(new GameScene));
-                    }
-                    else if (option_at (touch_location) == HELP)
-                    {
-                        // director.run_scene (shared_ptr< Scene >(new GameScene));
+                        director.run_scene (shared_ptr<Scene>(new GameScene));
                     }
 
                     break;
@@ -174,8 +170,8 @@ namespace DuetClone
     {
         // Se asigna un slice del atlas a cada opción del menú según su ID:
 
-        options[PLAY   ].slice = atlas->get_slice (ID(play)   );
-        options[HELP   ].slice = atlas->get_slice (ID(help)   );
+        options[PLAY].slice = atlas->get_slice (ID(play));
+        options[HELP].slice = atlas->get_slice (ID(help));
 
         // Se calcula la altura total del menú:
 
@@ -186,7 +182,7 @@ namespace DuetClone
         // Se calcula la posición del borde superior del menú en su conjunto de modo que
         // quede centrado verticalmente:
 
-        float option_top = canvas_height / 2.f + menu_height / 2.f;
+        float option_top = float(canvas_height) / float(2.f + menu_height / 2.f);
 
         // Se establece la posición del borde superior de cada opción:
 
@@ -225,9 +221,11 @@ namespace DuetClone
         return -1;
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     void MainMenuScene::AdjustAspectRatio(basics::Graphics_Context::Accessor & context)
     {
-        float aspectRatio = float(context->get_surface_width()) / context->get_surface_height();
+        float aspectRatio = float(context->get_surface_width()) / float(context->get_surface_height());
 
         canvas_width = unsigned(canvas_height * aspectRatio);
 

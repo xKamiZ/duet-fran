@@ -27,7 +27,7 @@ namespace DuetClone {
     public:
 
         T * RequestObject();            // Retorna un objeto T disponible en el pool
-        void Add(T * object);     // Añade una nueva referencia al pool de objetos
+        void Add(T * object);           // Añade una nueva referencia al pool de objetos
     };
 
 
