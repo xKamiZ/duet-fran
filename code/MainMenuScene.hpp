@@ -35,7 +35,6 @@ namespace DuetClone
         {
             LOADING,
             READY,
-            FINISHED,
             ERROR
         };
 

@@ -42,70 +42,36 @@ namespace DuetClone {
         if (touchingScreen)
         {
             IncrementCurrentAngle(_direction * deltaTime * _rotationSpeed);
-            Rotate(_currentAngle);
+
+            RotateCircleSprite(*_playerSprites[0].get(), _currentAngle);
+            RotateCircleSprite(*_playerSprites[1].get(), _currentAngle);
         }
         else _currentAngle = 0.0f;
 
-
     }
 
-    void Player::Rotate(float ball0Angle)
+    void Player::RotateCircleSprite(Sprite & targetSprite, float angleWithPivot)
     {
-        RotateBall0(ball0Angle);
-        RotateBall1(ball0Angle + M_PI);
-    }
-
-    void Player::RotateBall0(float angleWithPivot)
-    {
-        auto ball0Sprite = _playerSprites[0].get();
-
         float angleSin = sin(angleWithPivot);
         float angleCos = cos(angleWithPivot);
 
-        float ball0xPosition = ball0Sprite->get_position_x();
-        float ball0yPosition = ball0Sprite->get_position_y();
+        float spriteXPosition = targetSprite.get_position_x();
+        float spriteYPosition = targetSprite.get_position_y();
 
-        ball0xPosition -= _rotationPivotPoint[0];
-        ball0yPosition -=  _rotationPivotPoint[1];
+        spriteXPosition -= _rotationPivotPoint[0];
+        spriteYPosition -=  _rotationPivotPoint[1];
 
-        ball0Sprite->set_position_x(ball0xPosition);
-        ball0Sprite->set_position_y(ball0yPosition);
+        targetSprite.set_position_x(spriteXPosition);
+        targetSprite.set_position_y(spriteYPosition);
 
-        float newXFirstSprite = (_playerSprites[0]->get_position_x() * angleCos) - (_playerSprites[0]->get_position_y() * angleSin);
-        float newYFirstSprite = (_playerSprites[0]->get_position_x() * angleSin) + (_playerSprites[0]->get_position_y() * angleCos);
+        float newXSecondSprite = (targetSprite.get_position_x() * angleCos) - (targetSprite.get_position_y() * angleSin);
+        float newYSecondSprite = (targetSprite.get_position_x() * angleSin) + (targetSprite.get_position_y() * angleCos);
 
-        ball0xPosition = newXFirstSprite + _rotationPivotPoint[0];
-        ball0yPosition = newYFirstSprite + _rotationPivotPoint[1];
+        spriteXPosition = newXSecondSprite + _rotationPivotPoint[0];
+        spriteYPosition = newYSecondSprite + _rotationPivotPoint[1];
 
-        ball0Sprite->set_position_x(ball0xPosition);
-        ball0Sprite->set_position_y(ball0yPosition);
-
-    }
-
-    void Player::RotateBall1(float angleWithPivot)
-    {
-        auto ball1Sprite = _playerSprites[1].get();
-
-        float angleSin = sin(angleWithPivot);
-        float angleCos = cos(angleWithPivot);
-
-        float ball1xPosition = ball1Sprite->get_position_x();
-        float ball1yPosition = ball1Sprite->get_position_y();
-
-        ball1xPosition -= _rotationPivotPoint[0];
-        ball1yPosition -=  _rotationPivotPoint[1];
-
-        ball1Sprite->set_position_x(ball1xPosition);
-        ball1Sprite->set_position_y(ball1yPosition);
-
-        float newXSecondSprite = (_playerSprites[1]->get_position_x() * angleCos) - (_playerSprites[1]->get_position_y() * angleSin);
-        float newYSecondSprite = (_playerSprites[1]->get_position_x() * angleSin) + (_playerSprites[1]->get_position_y() * angleCos);
-
-        ball1xPosition = newXSecondSprite + _rotationPivotPoint[0];
-        ball1yPosition = newYSecondSprite + _rotationPivotPoint[1];
-
-        ball1Sprite->set_position_x(ball1xPosition);
-        ball1Sprite->set_position_y(ball1yPosition);
+        targetSprite.set_position_x(spriteXPosition);
+        targetSprite.set_position_y(spriteYPosition);
     }
 
 } // DuetClone

@@ -17,7 +17,6 @@ namespace DuetClone
 
     MainMenuScene::MainMenuScene()
     {
-
         _isAspectRatioAdjusted = false;
         state         = LOADING;
         suspended     = true;
@@ -78,12 +77,11 @@ namespace DuetClone
                     {
                         director.run_scene (shared_ptr< Scene >(new GameScene));
                     }
-                    /*
                     else if (option_at (touch_location) == HELP)
                     {
                         // director.run_scene (shared_ptr< Scene >(new GameScene));
                     }
-                     */
+
                     break;
                 }
             }

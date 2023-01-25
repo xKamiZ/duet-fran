@@ -18,13 +18,10 @@ namespace DuetClone {
 
     class Player{
 
-        typedef  shared_ptr<Sprite> Sprite_Pointer;
-        typedef  vector<Sprite_Pointer> Player_Sprites;
-
     private:
 
         static constexpr float _rotationSpeed = 3.0f;                                  // Velocidad de rotación del Player
-        Player_Sprites _playerSprites {} ;                                   // Vector de punteros a sprites
+        vector<shared_ptr<Sprite>> _playerSprites {} ;                                   // Vector de punteros a sprites
         Point2f _rotationPivotPoint;                                         // Punto de pivote para la rotación de los sprites del Player
         float _currentAngle;
         float _direction;
@@ -47,9 +44,7 @@ namespace DuetClone {
 
     private:
 
-        void Rotate(float ball0Angle);
-        void RotateBall0(float angleWithPivot);
-        void RotateBall1(float angleWithPivot);
+        void RotateCircleSprite(Sprite & targetSprite, float angleWithPivot);
 
     };
 
