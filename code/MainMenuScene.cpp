@@ -17,6 +17,8 @@ namespace DuetClone
 
     MainMenuScene::MainMenuScene()
     {
+
+        _isAspectRatioAdjusted = false;
         state         = LOADING;
         suspended     = true;
         canvas_width  = 1920;
@@ -76,15 +78,12 @@ namespace DuetClone
                     {
                         director.run_scene (shared_ptr< Scene >(new GameScene));
                     }
+                    /*
                     else if (option_at (touch_location) == HELP)
                     {
                         // director.run_scene (shared_ptr< Scene >(new GameScene));
                     }
-                    else if (option_at (touch_location) == EXIT)
-                    {
-                        // Cierra la aplicación
-
-                    }
+                     */
                     break;
                 }
             }
@@ -101,12 +100,11 @@ namespace DuetClone
 
                 if (context)
                 {
-                    // Ajusta el aspect ratio si no lo está
                     if (!_isAspectRatioAdjusted) AdjustAspectRatio(context);
 
                     // Se carga el atlas:
 
-                    atlas.reset (new Atlas("high/ui/ui-spritesheet.sprites", context));
+                    atlas.reset (new Atlas("high/ui/main-menu.sprites", context));
 
                     // Si el atlas se ha podido cargar el estado es READY y, en otro caso, es ERROR:
 
@@ -180,7 +178,6 @@ namespace DuetClone
 
         options[PLAY   ].slice = atlas->get_slice (ID(play)   );
         options[HELP   ].slice = atlas->get_slice (ID(help)   );
-        options[EXIT   ].slice = atlas->get_slice (ID(exit)   );
 
         // Se calcula la altura total del menú:
 
@@ -230,20 +227,13 @@ namespace DuetClone
         return -1;
     }
 
-    // ---------------------------------------------------------------------------------------------
-
-    void MainMenuScene::AdjustAspectRatio(Graphics_Context::Accessor & context)
+    void MainMenuScene::AdjustAspectRatio(basics::Graphics_Context::Accessor & context)
     {
-        /*
-         * Teniendo en cuenta que la orientación de la pantalla del juego será siempre
-         * 'portrait', el ancho será menor que el alto.
-         * El alto será reescalado para que coincida con el aspect ratio real de la ventana.
-         */
-
         float aspectRatio = float(context->get_surface_width()) / context->get_surface_height();
 
         canvas_width = unsigned(canvas_height * aspectRatio);
 
         _isAspectRatioAdjusted = true;
     }
+
 } // DuetClone

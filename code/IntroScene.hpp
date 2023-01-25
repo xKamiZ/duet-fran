@@ -50,16 +50,20 @@ namespace DuetClone
 
         float    opacity;                                   ///< Opacidad de la textura.
 
-        std::shared_ptr < Texture_2D > introIconTexture;        ///< Textura que contiene la imagen del logo.
+        std::shared_ptr < Texture_2D > logo_texture;        ///< Textura que contiene la imagen del logo.
+
+        bool _isAspectRatioAdjusted;     // Indica si está ajustado o no el Aspect Ratio
 
     public:
 
         IntroScene()
         {
+            _isAspectRatioAdjusted = false;
+
             state         = UNINITIALIZED;
             suspended     = true;
-            canvas_width  = 1280;
-            canvas_height =  720;
+            canvas_width  = 1920;
+            canvas_height =  1080;
         }
 
         /**
@@ -112,7 +116,7 @@ namespace DuetClone
         void update_fading_in  ();
         void update_waiting    ();
         void update_fading_out ();
-
+        void AdjustAspectRatio(basics::Graphics_Context::Accessor & context);       // Ajusta el aspect ratio al real de la pantalla
     };
 
 } // DuetClone

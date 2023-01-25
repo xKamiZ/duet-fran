@@ -66,15 +66,15 @@ namespace DuetClone
             {
                 canvas->clear ();
 
-                if (introIconTexture)
+                if (logo_texture)
                 {
                     canvas->set_opacity (opacity);
 
                     canvas->fill_rectangle
                             (
                                     { canvas_width * .5f, canvas_height * .5f },
-                                    {introIconTexture->get_width (), introIconTexture->get_height () },
-                                    introIconTexture. get ()
+                                    {logo_texture->get_width (), logo_texture->get_height () },
+                                    logo_texture. get ()
                             );
                 }
             }
@@ -87,15 +87,17 @@ namespace DuetClone
 
         if (context)
         {
+            if (!_isAspectRatioAdjusted) AdjustAspectRatio(context);
+
             // Se carga la textura del icono para la intro:
 
-            introIconTexture = Texture_2D::create (0, context, "duet-clone-app-icon.png");
+            logo_texture = Texture_2D::create (0, context, "logo.png");
 
             // Se comprueba si la textura se ha podido cargar correctamente:
 
-            if (introIconTexture)
+            if (logo_texture)
             {
-                context->add (introIconTexture);
+                context->add (logo_texture);
 
                 timer.reset ();
 
@@ -152,6 +154,21 @@ namespace DuetClone
 
             basics::director.run_scene (std::shared_ptr<Scene>(new MainMenuScene));
         }
+    }
+
+    void IntroScene::AdjustAspectRatio(Graphics_Context::Accessor & context)
+    {
+        /*
+         * Teniendo en cuenta que la orientación de la pantalla del juego será siempre
+         * 'portrait', el ancho será menor que el alto.
+         * El alto será reescalado para que coincida con el aspect ratio real de la ventana.
+         */
+
+        float aspectRatio = float(context->get_surface_width()) / context->get_surface_height();
+
+        canvas_width = unsigned(canvas_height * aspectRatio);
+
+        _isAspectRatioAdjusted = true;
     }
 
 } // DuetClone

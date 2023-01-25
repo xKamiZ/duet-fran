@@ -43,7 +43,6 @@ namespace DuetClone
         {
             PLAY,
             HELP,
-            EXIT
         };
 
         struct Option
@@ -54,7 +53,7 @@ namespace DuetClone
         };
 
 
-        static const unsigned number_of_options = 3;
+        static const unsigned number_of_options = 2;
 
     private:
 
