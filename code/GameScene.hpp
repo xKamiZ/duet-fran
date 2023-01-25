@@ -44,8 +44,8 @@ namespace DuetClone
         Player player;                                              // Objeto jugador
         Player * _playerPtr = nullptr;                              // Puntero al jugador
 
-        ObjectPool<Sprite> _obstaclePool;
-        vector<Sprite*> _obstacleList;
+        ObjectPool<Sprite> _obstaclePool;                           // Pool de obstáculos (sprites de rectángulos)
+        vector<Sprite*> _obstacleList;                              // Contenedor de obstáculos que se van sacando del pool
 
         std::list<shared_ptr<Sprite>> _spriteList;
 

@@ -17,7 +17,7 @@
 #include <basics/opengles/Canvas_ES2>
 #include <basics/opengles/OpenGL_ES2>
 
-#include "GameScene.hpp"
+#include "IntroScene.hpp"
 
 using namespace basics;
 using namespace DuetClone;
@@ -31,7 +31,7 @@ int main ()
 
     // Se crea una escena y se inicia mediante el Director:
 
-    director.run_scene (shared_ptr< Scene >(new GameScene));
+    director.run_scene (shared_ptr< Scene >(new IntroScene));
 
     return 0;
 }
