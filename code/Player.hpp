@@ -23,11 +23,11 @@ namespace DuetClone {
 
     private:
 
-        float _rotationSpeed;                                                // Velocidad de rotación del Player
-
+        static constexpr float _rotationSpeed = 3.0f;                                  // Velocidad de rotación del Player
         Player_Sprites _playerSprites {} ;                                   // Vector de punteros a sprites
-
         Point2f _rotationPivotPoint;                                         // Punto de pivote para la rotación de los sprites del Player
+        float _currentAngle;
+        float _direction;
 
     public:
 
@@ -35,16 +35,21 @@ namespace DuetClone {
         Player();
 
         /// SETTERS ///
-        void SetRotationSpeed(float newSpeed) { _rotationSpeed = newSpeed; }
         void SetPivotPoint(float x, float y) { _rotationPivotPoint[0] = x; _rotationPivotPoint[1] = y;}
+        void IncrementCurrentAngle(float newAngle) { _currentAngle = newAngle; }
+        void SetDirection(float newDirection) { _direction = newDirection; }
 
         // Añade un nuevo puntero a sprite al final del array de sprites del jugador
         void AddPlayerSprite(const shared_ptr<Sprite> spriteRef) { _playerSprites.push_back(spriteRef); }
         void RenderPlayer(Canvas & canvas);                                  // Dibuja los sprites del jugador en pantalla
-        void UpdatePlayer(float deltaTime);                                  // Actualiza el jugador en Update
+        void UpdatePlayer(float deltaTime, bool touchingScreen);                                  // Actualiza el jugador en Update
         bool PlayerCollided(Sprite & other);                                 // Comprueba si alguno de los sprites del jugador a impactado con otro
-        void RotateRight();                                                  // Cambia la dirección de rotación del jugador a un sentido horario
-        void RotateLeft();                                                   // Cambia la dirección de rotación del jugador a un sentido antihorario
+
+    private:
+
+        void Rotate(float ball0Angle);
+        void RotateBall0(float angleWithPivot);
+        void RotateBall1(float angleWithPivot);
 
     };
 

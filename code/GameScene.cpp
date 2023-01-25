@@ -65,6 +65,10 @@ namespace DuetClone
             switch (event.id)
             {
                 case ID(touch-started):
+                {
+                    _touchingScreen = true;
+                    break;
+                }
                 case ID(touch-moved):
                 {
                     x = *event[ID(x)].as< var::Float > ();
@@ -73,12 +77,17 @@ namespace DuetClone
                     if (x > canvas_width / 2.0f)
                     {
 
+                        _playerPtr->SetDirection(-1.0f);
+
                     } // Pulsación en la mitad derecha de la pantalla
                     else if (x < canvas_width / 2.0f)
                     {
 
+                        _playerPtr->SetDirection(1.0f);
+
                     } // Pulsación en la mitad izquierda de la pantalla
 
+                    _touchingScreen = true;
 
                     break;
                 }
@@ -86,6 +95,7 @@ namespace DuetClone
                 {
                     x = *event[ID(x)].as< var::Float > ();
                     y = *event[ID(y)].as< var::Float > ();
+                    _touchingScreen = false;
                     break;
                 }
             }
@@ -180,7 +190,7 @@ namespace DuetClone
         {
             // Obtiene la información de las texturas del array de texturas
             Texture_Data & currentTextureData = _texturesData[_textures.size ()];
-            Texture_Pointer & currentTexture = _textures[currentTextureData.id] = Texture_2D::create (currentTextureData.id, graphicsContext, currentTextureData.path);
+            std::shared_ptr<Texture_2D> & currentTexture = _textures[currentTextureData.id] = Texture_2D::create (currentTextureData.id, graphicsContext, currentTextureData.path);
 
             // Añade la textura al contexto gráfico
             if (currentTexture) graphicsContext->add (currentTexture);
@@ -198,30 +208,38 @@ namespace DuetClone
 
     void GameScene::CreateSprites()
     {
-        Sprite_Pointer blueCircle(new Sprite(_textures[ID(blueCircleId)].get()));
-        Sprite_Pointer redCircle(new Sprite(_textures[ID(redCircleId)].get()));
-        Sprite_Pointer rectangle01(new Sprite(_textures[ID(rect01Id)].get()));
-        Sprite_Pointer rectangle02(new Sprite(_textures[ID(rect02Id)].get()));
-        Sprite_Pointer rectangle03(new Sprite(_textures[ID(rect03Id)].get()));
+        // Crea los Sprites que aparecerán en la escena
+        std::shared_ptr<Sprite> blueCircle(new Sprite(_textures[ID(blueCircleId)].get()));
+        std::shared_ptr<Sprite> redCircle(new Sprite(_textures[ID(redCircleId)].get()));
+        std::shared_ptr<Sprite> rectangle01(new Sprite(_textures[ID(rect01Id)].get()));
+        std::shared_ptr<Sprite> rectangle02(new Sprite(_textures[ID(rect02Id)].get()));
+        std::shared_ptr<Sprite> rectangle03(new Sprite(_textures[ID(rect03Id)].get()));
 
         // Inicializa los puntos centrales de los sprites de los obstáculos
         rectangle01->set_anchor(basics::CENTER);
-        rectangle02->set_anchor(basics::CENTER);
-        rectangle03->set_anchor(basics::CENTER);
-
-        // Añade a la lista los obstáculos los tres sprites de obstáculos
-        _obstacleSprites.push_back(rectangle01);
-        _obstacleSprites.push_back(rectangle02);
-        _obstacleSprites.push_back(rectangle03);
+        rectangle02->set_anchor(basics::TOP | basics::RIGHT);
+        rectangle03->set_anchor(basics::TOP | basics::LEFT);
 
         // Posiciona los sprites de ambos círculos en la pantalla
         if (blueCircle) blueCircle->set_position_x(canvas_width / 4.0f);
         if (blueCircle) blueCircle->set_position_y(canvas_height / 4.0f);
-
         if (redCircle) redCircle->set_position_x(canvas_width * 0.75f);
         if (redCircle) redCircle->set_position_y(canvas_height / 4.0f);
 
-        // Añade al array de sprites de player los sprites con las texturas correspondientes cargadas
+        // Añade los Sprites de los obstáculos al pool
+        _obstaclePool.Add(rectangle01.get());
+        _obstaclePool.Add(rectangle02.get());
+        _obstaclePool.Add(rectangle03.get());
+
+
+        _spriteList.push_back(blueCircle);
+        _spriteList.push_back(redCircle);
+        _spriteList.push_back(rectangle01);
+        _spriteList.push_back(rectangle02);
+        _spriteList.push_back(rectangle03);
+
+
+        // Añade al array de sprites de player los sprites de las bolas
         if (_playerPtr)
         {
             _playerPtr->AddPlayerSprite(blueCircle);
@@ -234,17 +252,21 @@ namespace DuetClone
     void GameScene::InitSceneObjects()
     {
         // Establece el punto de pivote de rotación
-        if(_playerPtr) _playerPtr->SetPivotPoint(canvas_width / 2.0f, canvas_height / 8.0f);
+        if(_playerPtr) _playerPtr->SetPivotPoint(canvas_width / 2.0f, canvas_height / 6.0f);
 
-        // Establece la posición inicial de los obstáculos
-        for (auto & obstacleSprite : _obstacleSprites)
+        for (int i = 0; i < 4; ++i)
         {
-            obstacleSprite->set_position_x(canvas_width / 2.0f);
-            obstacleSprite->set_position_y(canvas_height);
+            auto obstacle = _obstaclePool.RequestObject();
+            if (obstacle) _obstacleList.push_back(obstacle);
         }
 
-        // Establece la velocidad inicial en vertical de los obstáculos
-        for (auto & obstacleSprite : _obstacleSprites) obstacleSprite->set_speed_y(0.0f);
+        // Inicializa los obstáculos
+        for (auto & obstacle : _obstacleList)
+        {
+            obstacle->set_speed_y(0.0f);
+            obstacle->set_position_x(canvas_width / 2.0f);
+            obstacle->set_position_y(canvas_height);
+        }
     }
 
     void GameScene::RenderSprites(Canvas & canvas)
@@ -252,20 +274,20 @@ namespace DuetClone
         // Dibuja el objeto jugador
         if (_playerPtr) _playerPtr->RenderPlayer(canvas);
 
-        // Dibuja todos los obstáculos de la lista
-        for (const auto & obstacleSprite : _obstacleSprites) obstacleSprite->render(canvas);
+        // Dibuja los obstáculos
+        for (const auto & obstacle : _obstacleList) obstacle->render(canvas);
     }
 
     void GameScene::UpdateSceneObjects(float deltaTime)
     {
         // Llama a update en el player
-        if (_playerPtr) _playerPtr->UpdatePlayer(deltaTime);
+        if (_playerPtr) _playerPtr->UpdatePlayer(deltaTime, _touchingScreen);
 
-        // Llama a update para cada obstáculo
-        for (auto & obstacleSprite : _obstacleSprites)
+        // Llama a update de los obstáculos
+        for (auto & obstacle : _obstacleList)
         {
-            obstacleSprite->set_speed_y(_obstaclesDefaultVerticalSpeed);
-            obstacleSprite->update(deltaTime);
+            obstacle->set_speed_y(_obstaclesDefaultVerticalSpeed);
+            obstacle->update(deltaTime);
         }
     }
 

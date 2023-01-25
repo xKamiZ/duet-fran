@@ -26,11 +26,7 @@ namespace DuetClone
     class GameScene : public basics::Scene
     {
 
-        typedef std::shared_ptr<Sprite> Sprite_Pointer;
-        typedef std::list<Sprite_Pointer> Sprite_List;
-
-        typedef std::shared_ptr<Texture_2D> Texture_Pointer;
-        typedef std::map<basics::Id, Texture_Pointer> Texture_Map;
+        typedef std::map<basics::Id, std::shared_ptr<Texture_2D>> Texture_Map;
 
         typedef basics::Graphics_Context::Accessor GraphicsContextAccessor;
 
@@ -44,12 +40,17 @@ namespace DuetClone
         basics::Timer _timer;
 
         Texture_Map  _textures;                                     // Diccionario que contiene punteros a las texturas de los objetos
-        Sprite_List _obstacleSprites;                               // Lista de punteros a sprites que contiene los sprites de los elementos de la escena
 
         Player player;                                              // Objeto jugador
         Player * _playerPtr = nullptr;                              // Puntero al jugador
 
-        ObjectPool<Sprite_Pointer> _obstacleSpritePool;             // Pool de Sprites de obstáculos
+        ObjectPool<Sprite> _obstaclePool;
+        vector<Sprite*> _obstacleList;
+
+        std::list<shared_ptr<Sprite>> _spriteList;
+
+        bool _touchingScreen;
+
 
     public:
 

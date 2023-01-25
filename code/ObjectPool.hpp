@@ -7,7 +7,7 @@
 #ifndef BASICS_PROJECT_TEMPLATE_OBJECTPOOL_HPP
 #define BASICS_PROJECT_TEMPLATE_OBJECTPOOL_HPP
 
-#include <unordered_map>
+#include <map>
 #include <memory>
 
 using std::vector;
@@ -18,60 +18,47 @@ namespace DuetClone {
     template<typename T>
     class ObjectPool {
 
-        typedef std::unordered_map<T*, bool> Pool;
-
-    public:
-
-        ObjectPool(const vector<T> & collection);
+        typedef std::map<T*, bool> Pool;
 
     private:
 
-        Pool _pool;                                                             // Pool de objetos
-                                                                                // Cada clave del diccionario tendrá
-                                                                                // asignado como valor el estado en
-                                                                                // el que se encuentra (activo o inactivo)
-                                                                                // True indica que está en uso y False que no está en uso
+        Pool _pool;
 
     public:
 
-        T & RequestObject();                                                    // Retorna una referencia al objeto correspondiente del pool
+        T * RequestObject();            // Retorna un objeto T disponible en el pool
+        void Add(T * object);     // Añade una nueva referencia al pool de objetos
     };
 
 
     template<typename T>
-    T & ObjectPool<T>::RequestObject()
+    T * ObjectPool<T>::RequestObject()
     {
+
         // Itera por el pool en búsqueda de un elemento no activo
-        for (auto & element : _pool)
+        for (auto & object : _pool)
         {
             // Si el elemento no está activo, lo activa y retorna su referencia
-            if (element.second == false)
+            if (object.second == false)
             {
-                element.second == true;
-                static auto returnedElement = element; // Creamos una variable static con la misma referencia
-                                                         // para que no retorne una referencia colgante
+                object.second = true; // Cambia el estado de uso
 
-                return returnedElement;
+                return object.first; // Retorna el puntero al objeto disponible
             }
         }
 
         // Si se finaliza el bucle sin encontrar un elemento disponible...
 
-        static std::unique_ptr<T> newObject = new T(); // Crea un nuevo objeto del tipo que maneja el pool
+        return nullptr;
 
-        _pool.insert(pair<T*, bool>(newObject, true)); // Inserta el nuevo elemento en el pool
-                                                       // inicializándolo a true, ya que
-                                                       // será devuelto inmediatamente
-        return newObject;
     }
 
     template<typename T>
-    ObjectPool<T>::ObjectPool(const vector <T> & collection)
+    void ObjectPool<T>::Add(T * object)
     {
-        // Recorre la colección de objetos e inserta cada elemento
-        // en la pool estableciendo como estado inicial false
-        for (auto & element : collection) _pool.insert(pair<T*, bool>(element, false));
+        _pool.insert(pair<T*, bool>(object, false)); // Añade al pool un nuevo objeto
     }
+
 } // DuetClone
 
 #endif //BASICS_PROJECT_TEMPLATE_OBJECTPOOL_HPP
