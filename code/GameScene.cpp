@@ -59,34 +59,20 @@ namespace DuetClone
 
     void GameScene::handle (Event & event)
     {
-        if (state == RUNNING)
+        if (state == RUNNING || state == PAUSED)
         {
             switch (event.id)
             {
                 case ID(touch-started):
-                {
-                    _touchingScreen = true;
-                    break;
-                }
                 case ID(touch-moved):
                 {
                     x = *event[ID(x)].as< var::Float > ();
                     y = *event[ID(y)].as< var::Float > ();
 
-                    if (x > canvas_width / 2.0f)
-                    {
-
-                        _player.SetDirection(-1.0f);
-
-                    } // Pulsación en la mitad derecha de la pantalla
-                    else if (x < canvas_width / 2.0f)
-                    {
-
-                        _player.SetDirection(1.0f);
-
-                    } // Pulsación en la mitad izquierda de la pantalla
-
                     _touchingScreen = true;
+
+                    if (x > canvas_width / 2.0f)  _player.SetDirection(-1.0f);            // Pulsa la mitad derecha de la pantalla
+                    else if (x < canvas_width / 2.0f) _player.SetDirection(1.0f);         // Pulsa la mitad izquierda de la pantalla
 
                     break;
                 }
@@ -94,7 +80,13 @@ namespace DuetClone
                 {
                     x = *event[ID(x)].as< var::Float > ();
                     y = *event[ID(y)].as< var::Float > ();
+
                     _touchingScreen = false;
+
+                    Point2f touchPosition = {x, y};
+
+                    CheckForPause(touchPosition);                                                    // Comrpueba si se ha pulsado el botón de pausa
+
                     break;
                 }
             }
@@ -107,6 +99,7 @@ namespace DuetClone
         {
             case LOADING: load ();     break;
             case RUNNING: run  (time); break;
+            case PAUSED: break;
         }
     }
 
@@ -135,6 +128,14 @@ namespace DuetClone
                         canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
 
                         RenderSprites(*canvas);
+
+                        break;
+                    case PAUSED:
+
+                        canvas->set_color(0.0f, 0.0f, 0.0f);
+                        canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
+
+                        RenderPauseMenu(*canvas);
 
                         break;
                 }
@@ -286,6 +287,16 @@ namespace DuetClone
             obstacle->set_speed_y(_obstaclesDefaultVerticalSpeed);
             obstacle->update(deltaTime);
         }
+    }
+
+    void GameScene::RenderPauseMenu(Canvas & canvas)
+    {
+
+    }
+
+    void GameScene::CheckForPause(const Point2f &touchPosition)
+    {
+
     }
 
 }

@@ -98,5 +98,7 @@ namespace DuetClone
         void RenderSprites(basics::Canvas & canvas);                     // Dibuja los sprites de la escena de juego
         void UpdateSceneObjects(float deltaTime);                        // Actualiza los objetos de la escena de juego (se llama en run)
         void InitSceneObjects();                                         // Inicializa los objetos de la escena que lo requieran (se llama en load)
+        void RenderPauseMenu(basics::Canvas & canvas);                   // Dibuja en pantalla el menú de pausa
+        void CheckForPause(const Point2f & touchPosition);               // Comprueba si touchPosition pertence al sprite del botón de pausa
     };
 }
