@@ -35,7 +35,6 @@ namespace DuetClone
         canvas_width  = 1920;
         canvas_height = 1080;
 
-        _playerPtr = &player;
     }
 
     bool GameScene::initialize ()
@@ -77,13 +76,13 @@ namespace DuetClone
                     if (x > canvas_width / 2.0f)
                     {
 
-                        _playerPtr->SetDirection(-1.0f);
+                        _player.SetDirection(-1.0f);
 
                     } // Pulsación en la mitad derecha de la pantalla
                     else if (x < canvas_width / 2.0f)
                     {
 
-                        _playerPtr->SetDirection(1.0f);
+                        _player.SetDirection(1.0f);
 
                     } // Pulsación en la mitad izquierda de la pantalla
 
@@ -239,12 +238,10 @@ namespace DuetClone
         _spriteList.push_back(rectangle03);
 
 
-        // Añade al array de sprites de player los sprites de las bolas
-        if (_playerPtr)
-        {
-            _playerPtr->AddPlayerSprite(blueCircle);
-            _playerPtr->AddPlayerSprite(redCircle);
-        }
+        // Añade al array de sprites de _player los sprites de las bolas
+        _player.AddPlayerSprite(blueCircle);
+        _player.AddPlayerSprite(redCircle);
+
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,7 +249,7 @@ namespace DuetClone
     void GameScene::InitSceneObjects()
     {
         // Establece el punto de pivote de rotación
-        if(_playerPtr) _playerPtr->SetPivotPoint(canvas_width / 2.0f, canvas_height / 6.0f);
+        _player.SetPivotPoint(canvas_width / 2.0f, canvas_height / 6.0f);
 
         for (int i = 0; i < 4; ++i)
         {
@@ -272,7 +269,7 @@ namespace DuetClone
     void GameScene::RenderSprites(Canvas & canvas)
     {
         // Dibuja el objeto jugador
-        if (_playerPtr) _playerPtr->RenderPlayer(canvas);
+        _player.RenderPlayer(canvas);
 
         // Dibuja los obstáculos
         for (const auto & obstacle : _obstacleList) obstacle->render(canvas);
@@ -280,8 +277,8 @@ namespace DuetClone
 
     void GameScene::UpdateSceneObjects(float deltaTime)
     {
-        // Llama a update en el player
-        if (_playerPtr) _playerPtr->UpdatePlayer(deltaTime, _touchingScreen);
+        // Llama a update en el _player
+        _player.UpdatePlayer(deltaTime, _touchingScreen);
 
         // Llama a update de los obstáculos
         for (auto & obstacle : _obstacleList)

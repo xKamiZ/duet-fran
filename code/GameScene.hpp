@@ -41,8 +41,7 @@ namespace DuetClone
 
         Texture_Map  _textures;                                     // Diccionario que contiene punteros a las texturas de los objetos
 
-        Player player;                                              // Objeto jugador
-        Player * _playerPtr = nullptr;                              // Puntero al jugador
+        Player _player;                                              // Objeto jugador
 
         ObjectPool<Sprite> _obstaclePool;                           // Pool de obstáculos (sprites de rectángulos)
         vector<Sprite*> _obstacleList;                              // Contenedor de obstáculos que se van sacando del pool
@@ -58,6 +57,7 @@ namespace DuetClone
         {
             LOADING,
             RUNNING,
+            PAUSED,
         };
 
         State state;
