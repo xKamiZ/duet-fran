@@ -326,6 +326,39 @@ namespace DuetClone
         }
     }
 
+    void GameScene::ConfigurePauseMenuOptions()
+    {
+        // Se asigna un slice del atlas a cada opción del menú según su ID:
+
+        options[RESUME].slice = atlas->get_slice (ID(resume));
+        options[MENU].slice = atlas->get_slice (ID(menu));
+
+        // Se calcula la altura total del menú:
+
+        float menu_height = 0.0f;
+
+        for (auto & option : options) menu_height += option.slice->height;
+
+        // Se calcula la posición del borde superior del menú en su conjunto de modo que
+        // quede centrado verticalmente:
+
+        float option_top = canvas_height / 2.f + menu_height / 2.f;
+
+        // Se establece la posición del borde superior de cada opción:
+
+        for (unsigned index = 0; index < number_of_options; ++index)
+        {
+            options[index].position = Point2f{ canvas_width / 2.f, option_top };
+
+            option_top -= options[index].slice->height;
+        }
+
+        for (auto & option : options)
+        {
+            option.is_pressed = false;
+        }
+    }
+
     void GameScene::RenderPauseMenu(Canvas & canvas)
     {
         // Se dibuja el slice de cada una de las opciones del menú:
@@ -374,38 +407,5 @@ namespace DuetClone
         }
 
         return -1;
-    }
-
-    void GameScene::ConfigurePauseMenuOptions()
-    {
-        // Se asigna un slice del atlas a cada opción del menú según su ID:
-
-        options[RESUME].slice = atlas->get_slice (ID(resume));
-        options[MENU].slice = atlas->get_slice (ID(menu));
-
-        // Se calcula la altura total del menú:
-
-        float menu_height = 0.0f;
-
-        for (auto & option : options) menu_height += option.slice->height;
-
-        // Se calcula la posición del borde superior del menú en su conjunto de modo que
-        // quede centrado verticalmente:
-
-        float option_top = canvas_height / 2.f + menu_height / 2.f;
-
-        // Se establece la posición del borde superior de cada opción:
-
-        for (unsigned index = 0; index < number_of_options; ++index)
-        {
-            options[index].position = Point2f{ canvas_width / 2.f, option_top };
-
-            option_top -= options[index].slice->height;
-        }
-
-        for (auto & option : options)
-        {
-            option.is_pressed = false;
-        }
     }
 }
