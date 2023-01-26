@@ -101,15 +101,12 @@ namespace DuetClone
                     if (!_isAspectRatioAdjusted) AdjustAspectRatio(context);
 
                     // Se carga el atlas:
-
                     atlas.reset (new Atlas("high/ui/main-menu.sprites", context));
 
                     // Si el atlas se ha podido cargar el estado es READY y, en otro caso, es ERROR:
-
                     state = atlas->good () ? READY : ERROR;
 
                     // Si el atlas está disponible, se inicializan los datos de las opciones del menú:
-
                     if (state == READY)
                     {
                         configure_options ();
@@ -174,8 +171,8 @@ namespace DuetClone
     {
         // Se asigna un slice del atlas a cada opción del menú según su ID:
 
-        options[PLAY   ].slice = atlas->get_slice (ID(play)   );
-        options[HELP   ].slice = atlas->get_slice (ID(help)   );
+        options[PLAY].slice = atlas->get_slice (ID(play));
+        options[HELP].slice = atlas->get_slice (ID(help));
 
         // Se calcula la altura total del menú:
 

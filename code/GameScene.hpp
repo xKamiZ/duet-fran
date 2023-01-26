@@ -31,6 +31,19 @@ namespace DuetClone
 
     private:
 
+        enum Option_Id
+        {
+            MENU,
+            RESUME,
+        };
+
+        struct Option
+        {
+            const basics::Atlas::Slice * slice;
+            Point2f position;
+            float   is_pressed;
+        };
+
         static struct Texture_Data
                 {
                     basics::Id id;
@@ -38,23 +51,20 @@ namespace DuetClone
                 } _texturesData[];
 
         static unsigned _texturesCount;
-        float _obstaclesDefaultVerticalSpeed = -150.0f;             // Velocidad de movimiento vertical de los obstáculos
+        static const unsigned number_of_options = 2;                // Número de opciones del menú de pausa
                                                                     // No es constante porque hay obstáculos que se desplazarán más rápido
 
+        float _obstaclesDefaultVerticalSpeed = -150.0f;             // Velocidad de movimiento vertical de los obstáculos
         basics::Timer _timer;
-
         Texture_Map  _textures;                                     // Diccionario que contiene punteros a las texturas de los objetos
-
         Player _player;                                              // Objeto jugador
-
         ObjectPool<Sprite> _obstaclePool;                           // Pool de obstáculos (sprites de rectángulos)
         vector<Sprite*> _obstacleList;                              // Contenedor de obstáculos que se van sacando del pool
-
         std::list<shared_ptr<Sprite>> _spriteList;
-
         bool _touchingScreen;
-
-        std::unique_ptr<Sprite> _pauseButton;                            // Puntero al sprite del botón de pausa
+        std::unique_ptr<Sprite> _pauseButton;                       // Puntero al sprite del botón de pausa
+        Option options[number_of_options];                          // Array de opciones
+        std::unique_ptr<basics::Atlas> atlas;                       // Puntero al Atlas de los botones del menú de opciones
 
     public:
 
@@ -98,12 +108,14 @@ namespace DuetClone
         void run  (float time);
 
         void AdjustAspectRatio(GraphicsContextAccessor & context);       // Ajusta el aspect ratio al real de la pantalla
-        void LoadTextures(GraphicsContextAccessor & graphicsContext);    // Carga las texturas
+        void LoadTextures(GraphicsContextAccessor & context);    // Carga las texturas
         void CreateSprites();                                            // Crea los Sprites que habrá en la escena una vez las texturas hayan sido cargadas
         void RenderSprites(basics::Canvas & canvas);                     // Dibuja los sprites de la escena de juego
         void UpdateSceneObjects(float deltaTime);                        // Actualiza los objetos de la escena de juego (se llama en run)
         void InitSceneObjects();                                         // Inicializa los objetos de la escena que lo requieran (se llama en load)
         void RenderPauseMenu(basics::Canvas & canvas);                   // Dibuja en pantalla el menú de pausa
         void CheckForPause(const Point2f & touchPosition);               // Comprueba si touchPosition pertence al sprite del botón de pausa
+        void ConfigurePauseMenuOptions();                                // Una vez cargado el atlas del menú de pausa, se configuran las opciones del menú
+        int OptionAt (const Point2f & point);
     };
 }

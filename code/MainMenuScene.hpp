@@ -68,7 +68,7 @@ namespace DuetClone
 
         std::unique_ptr< Atlas > atlas;                     ///< Atlas que contiene las imágenes de las opciones del menú
 
-        bool _isAspectRatioAdjusted;     // Indica si está ajustado o no el Aspect Ratio
+        bool _isAspectRatioAdjusted;                         // Indica si está ajustado o no el Aspect Ratio
 
     public:
 

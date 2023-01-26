@@ -4,6 +4,8 @@
  */
 
 #include "GameScene.hpp"
+#include "MainMenuScene.hpp"
+
 #include <basics/Canvas>
 #include <basics/Director>
 #include <basics/Log>
@@ -90,6 +92,19 @@ namespace DuetClone
 
                     CheckForPause(touchPosition);                                                    // Comprueba si se ha pulsado el botón de pausa
 
+                    // Si el estado es PAUSED, se comprueba si se pulsa el botón resume para cambiar el estado a RUNNING
+                    if (state == PAUSED)
+                    {
+                        if (OptionAt(touchPosition) == RESUME)
+                        {
+                            state = RUNNING;
+                        }
+                        else if (OptionAt(touchPosition) == MENU)
+                        {
+                            director.run_scene (shared_ptr< Scene >(new MainMenuScene));
+                        }
+                    }
+
                     break;
                 }
             }
@@ -110,7 +125,7 @@ namespace DuetClone
     {
         if (!suspended)
         {
-            if (state == RUNNING)
+            if (state == RUNNING || state == PAUSED)
             {
                 Canvas * canvas = context->get_renderer< Canvas > (ID(canvas));
 
@@ -121,25 +136,23 @@ namespace DuetClone
 
                 if (canvas)
                 {
-                    canvas->clear();
 
+                    canvas->set_color(0.0f, 0.0f, 0.0f);
+                    canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
 
                     switch (state)
                     {
-                        case LOADING:
+                        case LOADING: break;
                         case RUNNING:
 
-                            canvas->set_color(0.0f, 0.0f, 0.0f);
-                            canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
-
+                            canvas->clear();
                             RenderSprites(*canvas);
 
                             break;
+
                         case PAUSED:
 
-                            canvas->set_color(0.0f, 0.0f, 0.0f);
-                            canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
-
+                            canvas->clear();
                             RenderPauseMenu(*canvas);
 
                             break;
@@ -189,23 +202,27 @@ namespace DuetClone
         _isAspectRatioAdjusted = true;
     }
 
-    void GameScene::LoadTextures(GameScene::GraphicsContextAccessor & graphicsContext)
+    void GameScene::LoadTextures(GameScene::GraphicsContextAccessor & context)
     {
+        // Se carga el atlas del menú de pausa:
+        atlas.reset (new Atlas("high/ui/pause-menu-atlas.sprites", context));
+
         // Se ejecuta por cada textura del array de texturas
         if (_textures.size() < _texturesCount)
         {
             // Obtiene la información de las texturas del array de texturas
             Texture_Data & currentTextureData = _texturesData[_textures.size ()];
-            std::shared_ptr<Texture_2D> & currentTexture = _textures[currentTextureData.id] = Texture_2D::create (currentTextureData.id, graphicsContext, currentTextureData.path);
+            std::shared_ptr<Texture_2D> & currentTexture = _textures[currentTextureData.id] = Texture_2D::create (currentTextureData.id, context, currentTextureData.path);
 
             // Añade la textura al contexto gráfico
-            if (currentTexture) graphicsContext->add (currentTexture);
+            if (currentTexture) context->add (currentTexture);
         }
         else
         {
             if (_timer.get_elapsed_seconds() > 1.0f)
             {
                 CreateSprites();
+                ConfigurePauseMenuOptions();
 
                 state = RUNNING;
             }
@@ -301,7 +318,7 @@ namespace DuetClone
         // Llama a update en el _player
         _player.UpdatePlayer(deltaTime, _touchingScreen);
 
-        // Llama a update de los obstáculos
+        // Llama a update de todos los obstáculos
         for (auto & obstacle : _obstacleList)
         {
             obstacle->set_speed_y(_obstaclesDefaultVerticalSpeed);
@@ -311,14 +328,84 @@ namespace DuetClone
 
     void GameScene::RenderPauseMenu(Canvas & canvas)
     {
+        // Se dibuja el slice de cada una de las opciones del menú:
 
+        for (auto & option : options)
+        {
+            canvas.set_transform
+                    (
+                            scale_then_translate_2d
+                                    (
+                                            option.is_pressed ? 0.75f : 1.f,              // Escala de la opción
+                                            { option.position[0], option.position[1] }      // Traslación
+                                    )
+                    );
+
+            canvas.fill_rectangle ({ 0.f, 0.f }, { option.slice->width, option.slice->height }, option.slice, CENTER | TOP);
+        }
     }
 
     void GameScene::CheckForPause(const Point2f & touchPosition)
     {
         // Si el punto dónde ha tocado el punto de usuario pertenece a la caja que conforma el sprite,
         // se cambia el estado a PAUSED
-        if (_pauseButton->contains(touchPosition)) state = PAUSED;
+        if (state == RUNNING && _pauseButton->contains(touchPosition))
+        {
+            state = PAUSED;
+        }
     }
 
+    int GameScene::OptionAt (const Point2f & point)
+    {
+        for (int index = 0; index < number_of_options; ++index)
+        {
+            const Option & option = options[index];
+
+            if
+                    (
+                    point[0] > option.position[0] - option.slice->width  &&
+                    point[0] < option.position[0] + option.slice->width  &&
+                    point[1] > option.position[1] - option.slice->height &&
+                    point[1] < option.position[1] + option.slice->height
+                    )
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    void GameScene::ConfigurePauseMenuOptions()
+    {
+        // Se asigna un slice del atlas a cada opción del menú según su ID:
+
+        options[RESUME].slice = atlas->get_slice (ID(resume));
+        options[MENU].slice = atlas->get_slice (ID(menu));
+
+        // Se calcula la altura total del menú:
+
+        float menu_height = 0.0f;
+
+        for (auto & option : options) menu_height += option.slice->height;
+
+        // Se calcula la posición del borde superior del menú en su conjunto de modo que
+        // quede centrado verticalmente:
+
+        float option_top = canvas_height / 2.f + menu_height / 2.f;
+
+        // Se establece la posición del borde superior de cada opción:
+
+        for (unsigned index = 0; index < number_of_options; ++index)
+        {
+            options[index].position = Point2f{ canvas_width / 2.f, option_top };
+
+            option_top -= options[index].slice->height;
+        }
+
+        for (auto & option : options)
+        {
+            option.is_pressed = false;
+        }
+    }
 }
