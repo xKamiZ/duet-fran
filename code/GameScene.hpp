@@ -50,6 +50,7 @@ namespace DuetClone
 
         bool _touchingScreen;
 
+        shared_ptr<Sprite> _pauseButton;                            // Puntero al sprite del botón de pausa
 
     public:
 

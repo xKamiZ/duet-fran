@@ -24,17 +24,20 @@ namespace DuetClone
                     { ID(rect01Id),        "high/rectangle-01.png"            },
                     { ID(rect02Id),        "high/rectangle-02.png"            },
                     { ID(rect03Id),        "high/rectangle-03.png"            },
+                    { ID(pauseButtonId),     "high/ui/pause-button.png"         },
             };
 
     unsigned GameScene::_texturesCount = sizeof(_texturesData) / sizeof(Texture_Data);
 
     GameScene::GameScene()
     {
-        _isAspectRatioAdjusted = false;
-
         canvas_width  = 1920;
         canvas_height = 1080;
 
+        _isAspectRatioAdjusted = false;
+        _pauseButton = nullptr;
+        _obstacleList = { };
+        _obstaclePool = { };
     }
 
     bool GameScene::initialize ()
@@ -214,6 +217,9 @@ namespace DuetClone
         std::shared_ptr<Sprite> rectangle01(new Sprite(_textures[ID(rect01Id)].get()));
         std::shared_ptr<Sprite> rectangle02(new Sprite(_textures[ID(rect02Id)].get()));
         std::shared_ptr<Sprite> rectangle03(new Sprite(_textures[ID(rect03Id)].get()));
+
+        _pauseButton; { new Sprite(_textures[ID(pauseButtonId)].get()); }
+
 
         // Inicializa los puntos centrales de los sprites de los obstáculos
         rectangle01->set_anchor(basics::CENTER);
