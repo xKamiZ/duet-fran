@@ -41,7 +41,7 @@ namespace DuetClone
         enum Option_Id
         {
             PLAY,
-            HELP
+            HELP,
         };
 
         struct Option
@@ -66,9 +66,9 @@ namespace DuetClone
 
         Option   options[number_of_options];                ///< Datos de las opciones del menú
 
-        std::unique_ptr<Atlas> atlas;                     ///< Atlas que contiene las imágenes de las opciones del menú
+        std::unique_ptr< Atlas > atlas;                     ///< Atlas que contiene las imágenes de las opciones del menú
 
-        bool _isAspectRatioAdjusted;                         // Indica si está ajustado o no el Aspect Ratio
+        bool _isAspectRatioAdjusted;     // Indica si está ajustado o no el Aspect Ratio
 
     public:
 

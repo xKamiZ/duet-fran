@@ -4,8 +4,8 @@
  */
 
 #include "IntroScene.hpp"
-#include "MainMenuScene.hpp"
 
+#include "MainMenuScene.hpp"
 #include <basics/Canvas>
 #include <basics/Director>
 
