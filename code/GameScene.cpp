@@ -24,7 +24,7 @@ namespace DuetClone
                     { ID(rect01Id),        "high/rectangle-01.png"            },
                     { ID(rect02Id),        "high/rectangle-02.png"            },
                     { ID(rect03Id),        "high/rectangle-03.png"            },
-                    { ID(pauseButtonId),     "high/ui/pause-button.png"         },
+                    { ID(pauseButtonId),   "high/ui/pause-button.png"         },
             };
 
     unsigned GameScene::_texturesCount = sizeof(_texturesData) / sizeof(Texture_Data);
@@ -88,7 +88,7 @@ namespace DuetClone
 
                     Point2f touchPosition = {x, y};
 
-                    CheckForPause(touchPosition);                                                    // Comrpueba si se ha pulsado el botón de pausa
+                    CheckForPause(touchPosition);                                                    // Comprueba si se ha pulsado el botón de pausa
 
                     break;
                 }
@@ -108,39 +108,42 @@ namespace DuetClone
 
     void GameScene::render (basics::Graphics_Context::Accessor & context)
     {
-        if (!suspended && state == RUNNING)
+        if (!suspended)
         {
-            Canvas * canvas = context->get_renderer< Canvas > (ID(canvas));
-
-            if (!canvas)
+            if (state == RUNNING)
             {
-                canvas = Canvas::create (ID(canvas), context, {{ canvas_width, canvas_height }});
-            }
+                Canvas * canvas = context->get_renderer< Canvas > (ID(canvas));
 
-            if (canvas)
-            {
-                canvas->clear();
-
-
-                switch (state)
+                if (!canvas)
                 {
-                    case LOADING:
-                    case RUNNING:
+                    canvas = Canvas::create (ID(canvas), context, {{ canvas_width, canvas_height }});
+                }
 
-                        canvas->set_color(0.0f, 0.0f, 0.0f);
-                        canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
+                if (canvas)
+                {
+                    canvas->clear();
 
-                        RenderSprites(*canvas);
 
-                        break;
-                    case PAUSED:
+                    switch (state)
+                    {
+                        case LOADING:
+                        case RUNNING:
 
-                        canvas->set_color(0.0f, 0.0f, 0.0f);
-                        canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
+                            canvas->set_color(0.0f, 0.0f, 0.0f);
+                            canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
 
-                        RenderPauseMenu(*canvas);
+                            RenderSprites(*canvas);
 
-                        break;
+                            break;
+                        case PAUSED:
+
+                            canvas->set_color(0.0f, 0.0f, 0.0f);
+                            canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
+
+                            RenderPauseMenu(*canvas);
+
+                            break;
+                    }
                 }
             }
         }
@@ -218,8 +221,17 @@ namespace DuetClone
         std::shared_ptr<Sprite> rectangle02(new Sprite(_textures[ID(rect02Id)].get()));
         std::shared_ptr<Sprite> rectangle03(new Sprite(_textures[ID(rect03Id)].get()));
 
-        _pauseButton; { new Sprite(_textures[ID(pauseButtonId)].get()); }
+        // Crea el Sprite del botón de pausa y lo guarda en el puntero
+        _pauseButton.reset (new Sprite(_textures[ID(pauseButtonId)].get()));
 
+        // Obtiene el punto donde se posicionará el Sprite
+        const float heightOffset = 70.0f;
+        const float widthOffset = 50.0f;
+        std::shared_ptr<Point2f> pauseButtonPosition (new Point2f(canvas_width - widthOffset, canvas_height - heightOffset));
+
+        // Establece el punto de anclaje y posición del Sprite en la pantalla
+        _pauseButton->set_anchor(CENTER);
+        _pauseButton->set_position(*pauseButtonPosition.get());
 
         // Inicializa los puntos centrales de los sprites de los obstáculos
         rectangle01->set_anchor(basics::CENTER);
@@ -248,7 +260,6 @@ namespace DuetClone
         // Añade al array de sprites de _player los sprites de las bolas
         _player.AddPlayerSprite(blueCircle);
         _player.AddPlayerSprite(redCircle);
-
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -275,11 +286,14 @@ namespace DuetClone
 
     void GameScene::RenderSprites(Canvas & canvas)
     {
-        // Dibuja el objeto jugador
-        _player.RenderPlayer(canvas);
+        // Dibuja el botón de pausa
+        if (_pauseButton) _pauseButton->render(canvas);
 
         // Dibuja los obstáculos
         for (const auto & obstacle : _obstacleList) obstacle->render(canvas);
+
+        // Dibuja el objeto jugador
+        _player.RenderPlayer(canvas);
     }
 
     void GameScene::UpdateSceneObjects(float deltaTime)
@@ -300,9 +314,11 @@ namespace DuetClone
 
     }
 
-    void GameScene::CheckForPause(const Point2f &touchPosition)
+    void GameScene::CheckForPause(const Point2f & touchPosition)
     {
-
+        // Si el punto dónde ha tocado el punto de usuario pertenece a la caja que conforma el sprite,
+        // se cambia el estado a PAUSED
+        if (_pauseButton->contains(touchPosition)) state = PAUSED;
     }
 
 }

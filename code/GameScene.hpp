@@ -27,12 +27,16 @@ namespace DuetClone
     {
 
         typedef std::map<basics::Id, std::shared_ptr<Texture_2D>> Texture_Map;
-
         typedef basics::Graphics_Context::Accessor GraphicsContextAccessor;
 
     private:
 
-        static struct   Texture_Data { basics::Id id; const char * path; } _texturesData[];
+        static struct Texture_Data
+                {
+                    basics::Id id;
+                    const char * path;
+                } _texturesData[];
+
         static unsigned _texturesCount;
         float _obstaclesDefaultVerticalSpeed = -150.0f;             // Velocidad de movimiento vertical de los obstáculos
                                                                     // No es constante porque hay obstáculos que se desplazarán más rápido
@@ -50,7 +54,7 @@ namespace DuetClone
 
         bool _touchingScreen;
 
-        shared_ptr<Sprite> _pauseButton;                            // Puntero al sprite del botón de pausa
+        std::unique_ptr<Sprite> _pauseButton;                            // Puntero al sprite del botón de pausa
 
     public:
 
