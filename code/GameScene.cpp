@@ -138,9 +138,8 @@ namespace DuetClone
 
                 if (canvas)
                 {
-
                     canvas->set_color(0.0f, 0.0f, 0.0f);
-                    canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height});
+                    canvas->fill_rectangle({0.0f, 0.0f}, {(float)canvas_width, (float)canvas_height });
 
                     switch (state)
                     {

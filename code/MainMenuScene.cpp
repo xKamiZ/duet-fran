@@ -262,7 +262,9 @@ namespace DuetClone
         // Añade la textura al contexto gráfico
         if (helpMenuTexture)
         {
+            // Añade la textura al contexto gráfico
             context->add (helpMenuTexture);
+
             // Inicializa el Sprite
             _helpSprite.reset(new Sprite(helpMenuTexture.get()));
             _helpSprite->set_anchor(CENTER);
