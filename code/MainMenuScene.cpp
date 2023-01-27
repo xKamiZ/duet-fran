@@ -105,6 +105,7 @@ namespace DuetClone
                 {
                     if (!_isAspectRatioAdjusted) AdjustAspectRatio(context);
 
+                    // Crea el menú de ayuda
                     LoadHelpMenu(context);
 
                     // Se carga el atlas
@@ -262,17 +263,12 @@ namespace DuetClone
         if (helpMenuTexture)
         {
             context->add (helpMenuTexture);
+            // Inicializa el Sprite
             _helpSprite.reset(new Sprite(helpMenuTexture.get()));
             _helpSprite->set_anchor(CENTER);
             _helpSprite->set_position({ (float)canvas_width / 2.0f, (float)canvas_height / 6.0f });
             _helpSprite->hide(); // Por defecto, el menú de ayuda está desactivado
         }
-    }
-
-    void MainMenuScene::RenderHelpMenu(Canvas & canvas)
-    {
-        // Dibuja el sprite del menú de ayuda
-
     }
 
 

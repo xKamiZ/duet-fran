@@ -143,11 +143,9 @@ namespace DuetClone
          */
         int option_at (const Point2f & point);
 
-        void AdjustAspectRatio(basics::Graphics_Context::Accessor & context);       // Ajusta el aspect ratio al real de la pantalla
+        void AdjustAspectRatio(Graphics_Context::Accessor & context);       // Ajusta el aspect ratio al real de la pantalla
 
-        void LoadHelpMenu(basics::Graphics_Context::Accessor & context);            // Carga la textura y crea el sprite del menú de ayuda
-
-        void RenderHelpMenu(Canvas & canvas);                                       // Dibuja el menú de ayuda
+        void LoadHelpMenu(Graphics_Context::Accessor & context);            // Carga la textura y crea el sprite del menú de ayuda
     };
 
 } // DuetClone
