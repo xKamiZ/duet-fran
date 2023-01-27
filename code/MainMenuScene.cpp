@@ -18,10 +18,15 @@ namespace DuetClone
     MainMenuScene::MainMenuScene()
     {
         _isAspectRatioAdjusted = false;
+        _helpButtonPressed = false;
+        _isHelpMenuActive = false;
+
         state         = LOADING;
         suspended     = true;
         canvas_width  = 1920;
         canvas_height = 1080;
+
+        _helpSprite = nullptr;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -79,7 +84,7 @@ namespace DuetClone
                     }
                     else if (option_at (touch_location) == HELP)
                     {
-                        // director.run_scene (shared_ptr< Scene >(new GameScene));
+                        _helpButtonPressed = true;
                     }
 
                     break;
@@ -100,7 +105,9 @@ namespace DuetClone
                 {
                     if (!_isAspectRatioAdjusted) AdjustAspectRatio(context);
 
-                    // Se carga el atlas:
+                    LoadHelpMenu(context);
+
+                    // Se carga el atlas
                     atlas.reset (new Atlas("high/ui/main-menu.sprites", context));
 
                     // Si el atlas se ha podido cargar el estado es READY y, en otro caso, es ERROR:
@@ -160,6 +167,20 @@ namespace DuetClone
                     // dibujos posteriores realizados con el mismo canvas:
 
                     canvas->set_transform (Transformation2f());
+
+                    if (_helpSprite) _helpSprite->render(*canvas);
+
+                    if (_helpButtonPressed)
+                    {
+                        // Se resetea la flag del botón de pausa
+                        _helpButtonPressed = false;
+
+                        // Se hace interruptor con el menú
+                        _isHelpMenuActive = !_isHelpMenuActive;
+
+                        if (_isHelpMenuActive) _helpSprite->show();
+                        else _helpSprite->hide();
+                    }
                 }
             }
         }
@@ -230,5 +251,29 @@ namespace DuetClone
 
         _isAspectRatioAdjusted = true;
     }
+
+    void MainMenuScene::LoadHelpMenu(basics::Graphics_Context::Accessor & context)
+    {
+        // Se carga la textura del menú de ayuda+
+
+        shared_ptr<Texture_2D> helpMenuTexture = Texture_2D::create (1, context, "high/help-menu.png");
+
+        // Añade la textura al contexto gráfico
+        if (helpMenuTexture)
+        {
+            context->add (helpMenuTexture);
+            _helpSprite.reset(new Sprite(helpMenuTexture.get()));
+            _helpSprite->set_anchor(CENTER);
+            _helpSprite->set_position({ (float)canvas_width / 2.0f, (float)canvas_height / 6.0f });
+            _helpSprite->hide(); // Por defecto, el menú de ayuda está desactivado
+        }
+    }
+
+    void MainMenuScene::RenderHelpMenu(Canvas & canvas)
+    {
+        // Dibuja el sprite del menú de ayuda
+
+    }
+
 
 } // DuetClone

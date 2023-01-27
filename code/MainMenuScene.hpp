@@ -13,6 +13,7 @@
 #include <basics/Scene>
 #include <basics/Size>
 #include <basics/Timer>
+#include "Sprite.hpp"
 
 using basics::Atlas;
 using basics::Timer;
@@ -66,9 +67,13 @@ namespace DuetClone
 
         Option   options[number_of_options];                ///< Datos de las opciones del menú
 
-        std::unique_ptr< Atlas > atlas;                     ///< Atlas que contiene las imágenes de las opciones del menú
+        std::unique_ptr<Atlas> atlas;                       ///< Atlas que contiene las imágenes de las opciones del menú
 
         bool _isAspectRatioAdjusted;                         // Indica si está ajustado o no el Aspect Ratio
+        bool _helpButtonPressed;                             // Indica si se ha pulsado el botón de ayuda
+        bool _isHelpMenuActive;
+
+        std::unique_ptr<Sprite> _helpSprite;                 // Sprite del menú de ayuda
 
     public:
 
@@ -139,6 +144,10 @@ namespace DuetClone
         int option_at (const Point2f & point);
 
         void AdjustAspectRatio(basics::Graphics_Context::Accessor & context);       // Ajusta el aspect ratio al real de la pantalla
+
+        void LoadHelpMenu(basics::Graphics_Context::Accessor & context);            // Carga la textura y crea el sprite del menú de ayuda
+
+        void RenderHelpMenu(Canvas & canvas);                                       // Dibuja el menú de ayuda
     };
 
 } // DuetClone

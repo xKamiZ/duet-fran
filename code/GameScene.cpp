@@ -37,9 +37,11 @@ namespace DuetClone
         canvas_height = 1080;
 
         _isAspectRatioAdjusted = false;
-        _pauseButton = nullptr;
         _obstacleList = { };
         _obstaclePool = { };
+
+        _pauseButton = nullptr;
+        atlas = nullptr;
     }
 
     bool GameScene::initialize ()
@@ -101,7 +103,7 @@ namespace DuetClone
                         }
                         else if (OptionAt(touchPosition) == MENU)
                         {
-                            director.run_scene (shared_ptr< Scene >(new MainMenuScene));
+                            director.run_scene (shared_ptr<Scene>(new MainMenuScene));
                         }
                     }
 
@@ -266,13 +268,11 @@ namespace DuetClone
         _obstaclePool.Add(rectangle02.get());
         _obstaclePool.Add(rectangle03.get());
 
-
         _spriteList.push_back(blueCircle);
         _spriteList.push_back(redCircle);
         _spriteList.push_back(rectangle01);
         _spriteList.push_back(rectangle02);
         _spriteList.push_back(rectangle03);
-
 
         // Añade al array de sprites de _player los sprites de las bolas
         _player.AddPlayerSprite(blueCircle);
