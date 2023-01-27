@@ -310,7 +310,6 @@ namespace DuetClone
             obstacle->set_position_x(randomXPosition);
             obstacle->set_position_y(canvas_height + heightOffset);;
         }
-
     }
 
     void GameScene::RenderSprites(Canvas & canvas)
