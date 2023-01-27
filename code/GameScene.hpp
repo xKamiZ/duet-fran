@@ -7,7 +7,7 @@
 #include <list>
 #include <memory>
 #include <vector>
-
+#include <random>
 #include <basics/Canvas>
 #include <basics/Id>
 #include <basics/Scene>
@@ -66,6 +66,9 @@ namespace DuetClone
         Option options[number_of_options];                          // Array de opciones
         std::unique_ptr<basics::Atlas> atlas;                       // Puntero al Atlas de los botones del menú de opciones
 
+        int _elapsedSeconds;                                        // Tiempo que transcurre tras el spawn de un bloque
+        static const int _secondsForNextObstacle = 3;               // Segundos que deben pasar antes del spawn del siguiente bloque
+
     public:
 
         enum State
@@ -117,5 +120,6 @@ namespace DuetClone
         void CheckForPause(const Point2f & touchPosition);               // Comprueba si touchPosition pertence al sprite del botón de pausa
         void ConfigurePauseMenuOptions();                                // Una vez cargado el atlas del menú de pausa, se configuran las opciones del menú
         int OptionAt (const Point2f & point);
+        bool Countdown();                                                // Contador simple, si devuelve true, el contador a saltado
     };
 }

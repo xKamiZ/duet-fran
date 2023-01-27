@@ -42,6 +42,8 @@ namespace DuetClone
 
         _pauseButton = nullptr;
         atlas = nullptr;
+
+        _elapsedSeconds = 0;
     }
 
     bool GameScene::initialize ()
@@ -266,6 +268,8 @@ namespace DuetClone
         _obstaclePool.Add(rectangle01.get());
         _obstaclePool.Add(rectangle02.get());
         _obstaclePool.Add(rectangle03.get());
+        _obstaclePool.Add(rectangle01.get());
+        _obstaclePool.Add(rectangle03.get());
 
         _spriteList.push_back(blueCircle);
         _spriteList.push_back(redCircle);
@@ -285,6 +289,7 @@ namespace DuetClone
         // Establece el punto de pivote de rotación
         _player.SetPivotPoint(canvas_width / 2.0f, canvas_height / 6.0f);
 
+        // TEMPORAL: Obtención de los obstáculos del pool
         for (int i = 0; i < 4; ++i)
         {
             auto obstacle = _obstaclePool.RequestObject();
@@ -294,10 +299,18 @@ namespace DuetClone
         // Inicializa los obstáculos
         for (auto & obstacle : _obstacleList)
         {
+            // Se genera una posición aleatoria a lo ancho del canvas
+            std::random_device generator;
+            std::uniform_real_distribution<float> distribution(0.0f, canvas_width);
+            float randomXPosition = distribution(generator);
+
+            const float heightOffset = 50.0f;
+
             obstacle->set_speed_y(0.0f);
-            obstacle->set_position_x(canvas_width / 2.0f);
-            obstacle->set_position_y(canvas_height);
+            obstacle->set_position_x(randomXPosition);
+            obstacle->set_position_y(canvas_height + heightOffset);;
         }
+
     }
 
     void GameScene::RenderSprites(Canvas & canvas)
@@ -321,6 +334,7 @@ namespace DuetClone
         for (auto & obstacle : _obstacleList)
         {
             obstacle->set_speed_y(_obstaclesDefaultVerticalSpeed);
+
             obstacle->update(deltaTime);
         }
     }
